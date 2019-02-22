@@ -1,38 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/main.dart';
 import 'package:flutter_app/store/UserStore.dart';
+import 'package:flutter_app/widget/StateButtonWidget.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class SettingsPage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return SettingsState();
-  }
-}
+import 'WebViewPage.dart';
 
-class SettingsState extends State<SettingsPage> {
-  /// 退出登录按钮松开时的背景颜色
-  final normalColor =
-      LinearGradient(colors: <Color>[Color(0xFF05A8F1), Color(0xFF25EAA5)]);
-
-  /// 退出登录按钮按下时的背景颜色
-  final pressedColor =
-      LinearGradient(colors: <Color>[Color(0xFF0558F1), Color(0xFF00EAA5)]);
-
-  /// 按钮按下时的颜色变化
-  Gradient btnGradient;
-
-  @override
-  void initState() {
-    super.initState();
-    btnGradient = normalColor;
+class SettingsPage extends StatelessWidget {
+  /// 跳转到设置页面
+  static Future<T> toSettings<T extends Object>(BuildContext context, BaseUserStore model) {
+    return Navigator.of(context, rootNavigator: true).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          // 要跳转的页面
+          return SettingsPage();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // 返回一个动画
+          return MyApp.createTransition(animation, child);
+        },
+        transitionDuration: Duration(milliseconds: 400),
+      ),
+    );
   }
 
-  void _showAlertDialog(
-      {@required BuildContext context, @required Widget child}) {
-    showCupertinoDialog<bool>(
-        context: context,
-        builder: (BuildContext context) => child).then((resValue) {
+  /// 显示确认退出对话框
+  void _showAlertDialog({@required BuildContext context, @required Widget child}) {
+    showCupertinoDialog<bool>(context: context, builder: (BuildContext context) => child).then((resValue) {
       if (resValue) {
         Navigator.of(context, rootNavigator: true).pop(true);
       }
@@ -89,25 +84,16 @@ class SettingsState extends State<SettingsPage> {
           // 退出登录按钮
           Container(
             padding: EdgeInsets.all(20),
-            child: GestureDetector(
-              onTapUp: (details) {
-                setState(() {
-                  // 松开
-                  btnGradient = normalColor;
-                });
-              },
-              onTapCancel: () {
-                setState(() {
-                  // 按下
-                  btnGradient = normalColor;
-                });
-              },
-              onTapDown: (details) {
-                setState(() {
-                  // 按下
-                  btnGradient = pressedColor;
-                });
-              },
+            child: StateButtonWidget(
+              child: Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    "退出登录",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
               onTap: () {
                 // 登录成功 修改全局变量
                 _showAlertDialog(
@@ -132,17 +118,13 @@ class SettingsState extends State<SettingsPage> {
                   ),
                 );
               },
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(7)),
-                    gradient: btnGradient),
-                height: 40,
-                child: Center(
-                  child: Text(
-                    "退出登录",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+              stateEnabled: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(7)),
+                gradient: LinearGradient(colors: <Color>[Color(0xFF05A8F1), Color(0xFF25EAA6)]),
+              ),
+              statePressed: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(7)),
+                gradient: LinearGradient(colors: <Color>[Color(0xFF0558F1), Color(0xFF00D080)]),
               ),
             ),
           ),
@@ -173,51 +155,14 @@ class MenuItem extends StatefulWidget {
 }
 
 class MenuItemState extends State<MenuItem> {
-  // menuItem松手时的背景颜色
-  final normalBgColor = Colors.transparent;
-
-  /// menuItem按下时的背景颜色
-  final pressedColor = Color(0xFFD0D0D0);
-
-  Color itemBgColor;
-
   final MenuItemData menuItemData;
 
   MenuItemState(this.menuItemData);
 
   @override
-  void initState() {
-    itemBgColor = normalBgColor;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapUp: (details) {
-        setState(() {
-          // 松开
-          itemBgColor = normalBgColor;
-        });
-      },
-      onTapCancel: () {
-        setState(() {
-          // 按下
-          itemBgColor = normalBgColor;
-        });
-      },
-      onTapDown: (details) {
-        setState(() {
-          // 按下
-          itemBgColor = pressedColor;
-        });
-      },
-      onTap: () {
-        // 点击时
-        print(menuItemData.id);
-      },
+    return StateButtonWidget(
       child: Container(
-        color: itemBgColor,
         height: 40,
         child: Row(
           children: <Widget>[
@@ -233,8 +178,7 @@ class MenuItemState extends State<MenuItem> {
               flex: 1,
               child: Container(),
             ),
-            ScopedModelDescendant<BaseUserStore>(
-                builder: (context, child, model) {
+            ScopedModelDescendant<BaseUserStore>(builder: (context, child, model) {
               if (menuItemData.id == 0) {
                 return Text(model.getUserInfo.phone);
               } else if (menuItemData.id == 1) {
@@ -252,10 +196,38 @@ class MenuItemState extends State<MenuItem> {
           ],
         ),
       ),
+      onTap: () {
+        // TODO 点击 menu 项
+        switch (menuItemData.id) {
+          case 0:
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+          case 3:
+            break;
+          case 4:
+            WebViewPage.toWebViewPage(context, "用户协议", "https://www.baidu.com").then((res) {
+              print(res);
+            });
+            break;
+          case 5:
+            WebViewPage.toWebViewPage(context, "使用说明", "https://www.baidu.com").then((res) {
+              print(res);
+            });
+            break;
+          default:
+            break;
+        }
+      },
+      stateEnabled: BoxDecoration(color: Colors.transparent),
+      statePressed: BoxDecoration(color: Color(0xFFD0D0D0)),
     );
   }
 }
 
+/// 分割线
 class CupLineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

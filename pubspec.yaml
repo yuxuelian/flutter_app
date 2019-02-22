@@ -18,12 +18,14 @@ dependencies:
   cupertino_icons: ^0.1.2
   qr_flutter: ^1.1.3
   scoped_model: ^1.0.1
-#  webview_flutter: ^0.3.0
+  http: ^0.11.3
+  webview_flutter: ^0.3.3
+  image_picker: 0.5.0+3
+#  video_player: 0.10.0+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
@@ -58,6 +60,22 @@ flutter:
   - images/icon_mine_user.png
   - images/icon_set_pwd.png
   - images/right_back.png
+  - images/show_qr_code_top_img.png
+  - images/qr_code_placeholder.png
+  - images/icon_community.png
+  - images/icon_school.png
+  - images/icon_factory.png
+  - images/icon_office.png
+  - images/icon_home_qr_code1.png
+  - images/icon_home_qr_code2.png
+  - images/icon_home_house.png
+  - images/icon_home_family.png
+  - images/scene_title_img.png
+  - images/icon_logo.png
+  - images/icon_user.png
+  - images/icon_phone.png
+  - images/icon_validate_time.png
+  - images/icon_house.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
