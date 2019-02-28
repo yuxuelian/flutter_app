@@ -1,18 +1,18 @@
-import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
+
+import 'DemoTest.dart';
+import 'package:scan_access/http/dio_util.dart';
 
 void main() async {
-  List widgets = [];
+  var dio = DioUtil.getInstance().dio;
   //发起单个请求
-  final response = await http.get("https://jsonplaceholder.typicode.com/posts");
-  print(response.body);
+  final response = await dio.get("https://jsonplaceholder.typicode.com/posts");
+//  print(response.data);
   print("--------------------------------------------------------------");
   //同时发起多个请求
-  final futures = await Future.wait(
-      [http.get("https://jsonplaceholder.typicode.com/posts")]);
+  final futures = await Future.wait([dio.get("https://jsonplaceholder.typicode.com/posts")]);
   futures.forEach((response) {
-    widgets = json.decode(response.body);
-    print(widgets);
+    var demoTest = DemoTest.fromJson(response.data[0]);
+    print(demoTest.toString());
   });
 }

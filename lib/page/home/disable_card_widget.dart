@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widget/LogoWidget.dart';
-import 'package:flutter_app/widget/StateButtonWidget.dart';
+import 'package:scan_access/widget/logo.dart';
+import 'package:scan_access/widget/state_button.dart';
 
-import '../LoginPage.dart';
+import '../login_page.dart';
 
 class DisableCardWidget extends StatefulWidget {
   @override
@@ -13,13 +13,11 @@ class DisableCardState extends State<DisableCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFF222222),
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
-          "我的电子门禁卡",
-          style: TextStyle(fontSize: 16),
-        ),
+        title: Text('我的电子门禁卡', style: TextStyle(fontSize: 16)),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
@@ -35,22 +33,19 @@ class DisableCardState extends State<DisableCardWidget> {
               children: <Widget>[
                 LogoWidget(),
                 Expanded(
-                  flex: 1,
                   child: Container(),
                 ),
                 Center(
                   child: Text(
-                    "状态:未登录",
+                    '状态:未登录',
                     style: TextStyle(fontSize: 14, color: Colors.black),
                   ),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Container(),
                 ),
-                Center(child: Image.asset("images/qr_code_placeholder.png", width: 300)),
+                Center(child: Image.asset('images/qr_code_placeholder.png', width: 300)),
                 Expanded(
-                  flex: 1,
                   child: Container(),
                 ),
                 Center(
@@ -60,7 +55,7 @@ class DisableCardState extends State<DisableCardWidget> {
                       height: 40,
                       child: Center(
                         child: Text(
-                          "登录",
+                          '登录',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -82,7 +77,6 @@ class DisableCardState extends State<DisableCardWidget> {
                   ),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Container(),
                 )
               ],

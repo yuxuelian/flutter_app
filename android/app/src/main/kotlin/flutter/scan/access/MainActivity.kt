@@ -1,4 +1,4 @@
-package com.example.flutterapp
+package flutter.scan.access
 
 import android.graphics.Color
 import android.os.Build

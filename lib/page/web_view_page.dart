@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
+import 'package:scan_access/main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatelessWidget {
@@ -31,6 +31,7 @@ class WebViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(title, style: TextStyle(fontSize: 16, color: Colors.white)),
         elevation: 0,
@@ -207,7 +208,7 @@ class SampleMenu extends StatelessWidget {
   void _onClearCache(WebViewController controller, BuildContext context) async {
     await controller.clearCache();
     Scaffold.of(context).showSnackBar(const SnackBar(
-      content: Text("Cache cleared."),
+      content: Text('Cache cleared.'),
     ));
   }
 
@@ -259,7 +260,7 @@ class NavigationControls extends StatelessWidget {
                         controller.goBack();
                       } else {
                         Scaffold.of(context).showSnackBar(
-                          const SnackBar(content: Text("No back history item")),
+                          const SnackBar(content: Text('No back history item')),
                         );
                         return;
                       }
@@ -274,7 +275,7 @@ class NavigationControls extends StatelessWidget {
                         controller.goForward();
                       } else {
                         Scaffold.of(context).showSnackBar(
-                          const SnackBar(content: Text("No forward history item")),
+                          const SnackBar(content: Text('No forward history item')),
                         );
                         return;
                       }

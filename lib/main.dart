@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:flutter_app/page/HomePage.dart';
-import 'store/UserStore.dart';
+import 'package:scan_access/page/home_page.dart';
+import 'store/user_store.dart';
 
-void main() => runApp(
-      MyApp(
-        userStore: UserStore(),
-      ),
-    );
+void main() => runApp(MyApp(userStore: UserStore()));
 
 class MyApp extends StatelessWidget {
   final BaseUserStore userStore;

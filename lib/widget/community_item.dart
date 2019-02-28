@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../page/SceneHomePage.dart';
-import 'StateButtonWidget.dart';
+import '../page/scene_home_page.dart';
+import 'state_button.dart';
 
 class CommunityItemWidget extends StatefulWidget {
+  final int index;
+
+  CommunityItemWidget(this.index);
+
   @override
-  State<StatefulWidget> createState() => CommunityItemState();
+  State<StatefulWidget> createState() => CommunityItemState(index);
 }
 
 class CommunityItemState extends State<CommunityItemWidget> {
+  final int index;
+
+  CommunityItemState(this.index);
+
   @override
   Widget build(BuildContext context) {
     return StateButtonWidget(
@@ -21,17 +29,14 @@ class CommunityItemState extends State<CommunityItemWidget> {
               padding: EdgeInsets.only(left: 20),
             ),
             Center(
-              child: Image.asset(
-                "images/icon_community.png",
-                width: 20,
-              ),
+              child: Image.asset('images/icon_community.png', width: 20),
             ),
             Padding(
               padding: EdgeInsets.only(left: 10),
             ),
             Center(
               child: Text(
-                "成都->汇锦广场",
+                '成都->汇锦广场 $index',
                 style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
@@ -40,10 +45,7 @@ class CommunityItemState extends State<CommunityItemWidget> {
               child: Container(),
             ),
             Center(
-              child: Image.asset(
-                "images/right_back.png",
-                width: 16,
-              ),
+              child: Image.asset('images/right_back.png', width: 16),
             ),
             Padding(
               padding: EdgeInsets.only(right: 20),
@@ -51,7 +53,6 @@ class CommunityItemState extends State<CommunityItemWidget> {
           ],
         ),
       ),
-      stateEnabled: BoxDecoration(color: Colors.transparent),
       statePressed: BoxDecoration(color: Color(0xFFD0D0D0)),
       onTap: () {
         // 跳转到场景主页

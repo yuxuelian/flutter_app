@@ -13,14 +13,29 @@ class StateButtonWidget extends StatelessWidget {
 
   final Decoration statePressed;
 
-  StateButtonWidget({this.child, this.onTap, this.isEnable: true, @required this.stateEnabled, Decoration stateDisable, Decoration statePressed})
-      : assert(stateEnabled != null),
-        stateDisable = stateDisable == null ? stateEnabled : stateDisable,
-        statePressed = statePressed == null ? stateEnabled : statePressed;
+  StateButtonWidget({
+    this.child,
+    this.onTap,
+    this.isEnable: true,
+    this.stateEnabled: const BoxDecoration(color: Colors.transparent),
+    Decoration stateDisable,
+    Decoration statePressed,
+  })  : stateDisable = stateDisable ?? stateEnabled,
+        statePressed = statePressed ?? stateEnabled;
 
   @override
   Widget build(BuildContext context) {
-    return isEnable ? FlatButtonWidget(child: child, onTap: onTap, stateEnabled: stateEnabled, statePressed: statePressed) : Container(child: child, decoration: stateDisable);
+    return isEnable
+        ? FlatButtonWidget(
+            child: child,
+            onTap: onTap,
+            stateEnabled: stateEnabled,
+            statePressed: statePressed,
+          )
+        : Container(
+            child: child,
+            decoration: stateDisable,
+          );
   }
 }
 
@@ -36,7 +51,12 @@ class FlatButtonWidget extends StatefulWidget {
   FlatButtonWidget({this.child, this.onTap, this.stateEnabled, this.statePressed});
 
   @override
-  State createState() => FlatButtonState(child: child, onTap: onTap, stateEnabled: stateEnabled, statePressed: statePressed);
+  State createState() => FlatButtonState(
+        child: child,
+        onTap: onTap,
+        stateEnabled: stateEnabled,
+        statePressed: statePressed,
+      );
 }
 
 class FlatButtonState extends State<FlatButtonWidget> {
@@ -50,7 +70,12 @@ class FlatButtonState extends State<FlatButtonWidget> {
 
   Decoration currentDecoration;
 
-  FlatButtonState({this.child, this.onTap, this.stateEnabled, this.statePressed});
+  FlatButtonState({
+    this.child,
+    this.onTap,
+    this.stateEnabled,
+    this.statePressed,
+  });
 
   @override
   void initState() {

@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
-import 'package:flutter_app/store/UserStore.dart';
-import 'package:flutter_app/widget/StateButtonWidget.dart';
+import 'package:scan_access/main.dart';
+import 'package:scan_access/store/user_store.dart';
+import 'package:scan_access/widget/include.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'WebViewPage.dart';
+import 'web_view_page.dart';
 
 class SettingsPage extends StatelessWidget {
   /// 跳转到设置页面
@@ -26,10 +26,21 @@ class SettingsPage extends StatelessWidget {
   }
 
   /// 显示确认退出对话框
-  void _showAlertDialog({@required BuildContext context, @required Widget child}) {
-    showCupertinoDialog<bool>(context: context, builder: (BuildContext context) => child).then((resValue) {
-      if (resValue) {
-        Navigator.of(context, rootNavigator: true).pop(true);
+  void _showAlertDialog(BuildContext context) {
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => MessageDialogWidget(
+            message: '确定退出登录吗?',
+            leftBtnText: '取消',
+            rightBtnText: '确定',
+          ),
+    ).then((resValue) {
+      // 返回值
+      if (resValue != null) {
+        if (resValue) {
+          // 点击了确定(退出当前页,并返回 true )
+          Navigator.of(context, rootNavigator: true).pop(true);
+        }
       }
     });
   }
@@ -42,10 +53,7 @@ class SettingsPage extends StatelessWidget {
       ),
       // logo
       Center(
-        child: Image.asset(
-          "images/login_logo.png",
-          width: 180,
-        ),
+        child: Image.asset('images/login_logo.png', width: 180),
       ),
       Padding(
         padding: EdgeInsets.only(top: 30),
@@ -53,12 +61,12 @@ class SettingsPage extends StatelessWidget {
     ];
 
     <MenuItemData>[
-      MenuItemData(0, "手机号", "images/icon_mine_phone.png"),
-      MenuItemData(1, "版本信息", "images/icon_mine_setting.png"),
-      MenuItemData(2, "检查更新", "images/icon_check_update.png"),
-      MenuItemData(3, "修改密码", "images/icon_set_pwd.png"),
-      MenuItemData(4, "用户协议", "images/icon_license.png"),
-      MenuItemData(5, "使用说明", "images/icon_mine_user.png"),
+      MenuItemData(0, '手机号', 'images/icon_mine_phone.png'),
+      MenuItemData(1, '版本信息', 'images/icon_mine_setting.png'),
+      MenuItemData(2, '检查更新', 'images/icon_check_update.png'),
+      MenuItemData(3, '修改密码', 'images/icon_set_pwd.png'),
+      MenuItemData(4, '用户协议', 'images/icon_license.png'),
+      MenuItemData(5, '使用说明', 'images/icon_mine_user.png'),
     ].forEach((menuItemData) {
       menuList.add(MenuItem(menuItemData));
       menuList.add(CupLineWidget());
@@ -68,15 +76,15 @@ class SettingsPage extends StatelessWidget {
     menuList.removeLast();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("个人信息"),
+        title: Text('个人信息', style: TextStyle(fontSize: 16, color: Colors.white)),
         centerTitle: true,
         elevation: 0,
       ),
       body: Column(
         children: <Widget>[
           Expanded(
-            flex: 1,
             child: ListView(
               children: menuList,
             ),
@@ -89,34 +97,14 @@ class SettingsPage extends StatelessWidget {
                 height: 40,
                 child: Center(
                   child: Text(
-                    "退出登录",
+                    '退出登录',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
               onTap: () {
                 // 登录成功 修改全局变量
-                _showAlertDialog(
-                  context: context,
-                  child: CupertinoAlertDialog(
-                    title: const Text('提示:'),
-                    content: const Text('确定退出登录吗?'),
-                    actions: <Widget>[
-                      CupertinoDialogAction(
-                        child: const Text('取消'),
-                        onPressed: () {
-                          Navigator.pop(context, false);
-                        },
-                      ),
-                      CupertinoDialogAction(
-                        child: const Text('确定'),
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
-                      ),
-                    ],
-                  ),
-                );
+                _showAlertDialog(context);
               },
               stateEnabled: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(7)),
@@ -149,9 +137,7 @@ class MenuItem extends StatefulWidget {
   MenuItem(this.menuItemData);
 
   @override
-  State<StatefulWidget> createState() {
-    return MenuItemState(menuItemData);
-  }
+  State<StatefulWidget> createState() => MenuItemState(menuItemData);
 }
 
 class MenuItemState extends State<MenuItem> {
@@ -175,7 +161,6 @@ class MenuItemState extends State<MenuItem> {
             ),
             Text(menuItemData.label),
             Expanded(
-              flex: 1,
               child: Container(),
             ),
             ScopedModelDescendant<BaseUserStore>(builder: (context, child, model) {
@@ -184,12 +169,12 @@ class MenuItemState extends State<MenuItem> {
               } else if (menuItemData.id == 1) {
                 return Text(model.getUserInfo.version);
               }
-              return Text("");
+              return Text('');
             }),
             Padding(
               padding: EdgeInsets.only(left: 6),
             ),
-            Image.asset("images/right_back.png", width: 16),
+            Image.asset('images/right_back.png', width: 16),
             Padding(
               padding: EdgeInsets.only(right: 20),
             ),
@@ -208,12 +193,12 @@ class MenuItemState extends State<MenuItem> {
           case 3:
             break;
           case 4:
-            WebViewPage.toWebViewPage(context, "用户协议", "https://www.baidu.com").then((res) {
+            WebViewPage.toWebViewPage(context, '用户协议', 'https://api.yishi-ai.com/static/html/license.html').then((res) {
               print(res);
             });
             break;
           case 5:
-            WebViewPage.toWebViewPage(context, "使用说明", "https://www.baidu.com").then((res) {
+            WebViewPage.toWebViewPage(context, '使用说明', 'https://api.yishi-ai.com/static/file/direction/index.html').then((res) {
               print(res);
             });
             break;
@@ -221,7 +206,6 @@ class MenuItemState extends State<MenuItem> {
             break;
         }
       },
-      stateEnabled: BoxDecoration(color: Colors.transparent),
       statePressed: BoxDecoration(color: Color(0xFFD0D0D0)),
     );
   }

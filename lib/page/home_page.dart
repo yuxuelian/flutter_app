@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/store/UserStore.dart';
+import 'package:scan_access/store/user_store.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'LoginPage.dart';
-import 'home/DisableCardWidget.dart';
-import 'home/EnableCardWidget.dart';
-import 'home/MineWidget.dart';
+import 'login_page.dart';
+import 'home/disable_card_widget.dart';
+import 'home/enable_card_widget.dart';
+import 'home/mine_widget.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -46,25 +46,9 @@ class HomeState extends State<HomePage> {
     this.mCurrentIndex = 0;
   }
 
-  Widget _getBodyWidget(int currentIndex, bool isLogin) {
-    Widget res;
-    switch (mCurrentIndex) {
-      case 0:
-        res = isLogin ? EnableCardWidget() : DisableCardWidget();
-        break;
-      case 1:
-        res = MemberWidget();
-        break;
-      default:
-        res = null;
-        break;
-    }
-    return res;
-  }
-
   @override
   Widget build(BuildContext context) {
-    print("HomeState   build");
+    print('HomeState   build');
     return ScopedModelDescendant<BaseUserStore>(builder: (context, child, model) {
       if (!model.isLogin) {
         // 退出登录(主动选择到首页)
@@ -77,8 +61,13 @@ class HomeState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Expanded(
-                flex: 1,
-                child: _getBodyWidget(mCurrentIndex, model.isLogin),
+                child: IndexedStack(
+                  children: <Widget>[
+                    model.isLogin ? EnableCardWidget() : DisableCardWidget(),
+                    MineWidget(),
+                  ],
+                  index: mCurrentIndex,
+                ),
               ),
               CupertinoTabBar(
                 currentIndex: mCurrentIndex,
@@ -105,35 +94,5 @@ class HomeState extends State<HomePage> {
         ),
       );
     });
-  }
-
-  @override
-  void didUpdateWidget(HomePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("didUpdateWidget");
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    print("deactivate");
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    print("dispose");
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    print("reassemble");
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print("didChangeDependencies");
   }
 }

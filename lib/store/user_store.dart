@@ -35,6 +35,6 @@ class UserStore extends BaseUserStore {
 }
 
 class UserInfo {
-  String phone = "15682070710";
-  String version = "1.0.0";
+  String phone = '15682070710';
+  String version = '1.0.0';
 }
