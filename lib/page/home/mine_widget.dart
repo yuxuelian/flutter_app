@@ -8,10 +8,13 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scan_access/store/user_store.dart';
 import 'package:scan_access/widget/community_item.dart';
-import 'package:scan_access/widget/loading_more.dart';
 import 'package:scan_access/widget/state_button.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../../bean/index.dart';
+import '../../http/request_method.dart';
+import '../../prefs/prefs_util.dart';
+import '../../store/user_store.dart';
 import '../settings_page.dart';
 
 // 已登录显示的页面
@@ -23,44 +26,88 @@ class MineWidget extends StatefulWidget {
 class MineState extends State<MineWidget> {
   File _avatarFile;
 
-  List<int> items = List.generate(5, (i) => i);
-
-  LoadMoreState loadMoreState = LoadMoreState.loading;
-
-  // 是否正在加载更多
-  bool _isLoadingMore = false;
-  ScrollController _scrollController;
-
   Future<File> _onImageButtonPressed(ImageSource source) {
     return ImagePicker.pickImage(source: source);
   }
 
-  List<Widget> _createSheetDialogWidget(List<String> contents) {
-    List<Widget> itemWidgets = [];
-    for (int i = 0; i < contents.length; i++) {
-      itemWidgets.add(CupertinoActionSheetAction(
-        child: Text(contents[i]),
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop(i);
-        },
-      ));
-    }
-    return itemWidgets;
-  }
-
   Future<File> _showSheetDialog(BuildContext context) async {
-    final value = await showCupertinoModalPopup<int>(
+    final value = await showModalBottomSheet<int>(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
-            actions: _createSheetDialogWidget(['拍照', '相册']),
-            cancelButton: CupertinoActionSheetAction(
-              child: const Text('取消'),
-              onPressed: () {
-                // 取消情况,返回 null
-                Navigator.of(context, rootNavigator: true).pop(-1);
-              },
-            ),
+      builder: (context) {
+        return Container(
+          color: Colors.transparent,
+          padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              FlatButton(
+                color: Colors.white,
+                splashColor: Colors.transparent,
+                highlightColor: Color(0xFFD0D0D0),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: EdgeInsets.all(0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(7),
+                  topRight: Radius.circular(7),
+                )),
+                onPressed: () {
+                  Navigator.of(context).pop(0);
+                },
+                child: Container(
+                  height: 40,
+                  width: double.infinity,
+                  child: Center(
+                    child: Text('拍照', style: TextStyle(fontSize: 16, color: Color(0xFFEB891A))),
+                  ),
+                ),
+              ),
+              Container(height: 1, color: Color(0xFF909090)),
+              FlatButton(
+                color: Colors.white,
+                splashColor: Colors.transparent,
+                highlightColor: Color(0xFFD0D0D0),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: EdgeInsets.all(0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(7),
+                  bottomRight: Radius.circular(7),
+                )),
+                onPressed: () {
+                  Navigator.of(context).pop(1);
+                },
+                child: Container(
+                  height: 40,
+                  width: double.infinity,
+                  child: Center(
+                    child: Text('相册', style: TextStyle(fontSize: 16, color: Color(0xFFEB891A))),
+                  ),
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(top: 10)),
+              FlatButton(
+                color: Colors.white,
+                splashColor: Colors.transparent,
+                highlightColor: Color(0xFFD0D0D0),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: EdgeInsets.all(0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7))),
+                onPressed: () {
+                  Navigator.of(context).pop(-1);
+                },
+                child: Container(
+                  height: 40,
+                  width: double.infinity,
+                  child: Center(
+                    child: Text('取消', style: TextStyle(fontSize: 16, color: Color(0xFF909090))),
+                  ),
+                ),
+              ),
+            ],
           ),
+        );
+      },
     );
     if (value != null) {
       ImageSource imageSource;
@@ -166,31 +213,50 @@ class MineState extends State<MineWidget> {
   @override
   void initState() {
     super.initState();
-    _scrollController = TrackingScrollController(keepScrollOffset: false);
-    _scrollController.addListener(() async {
-      var position = _scrollController.position;
-      print("position.pixels = ${position.pixels}");
-      print("position.maxScrollExtent = ${position.maxScrollExtent}");
-      if (position.pixels == position.maxScrollExtent) {
-        print("滑动到底部");
-        if (!_isLoadingMore) {
-          // 执行加载更多
-          _isLoadingMore = true;
-          List<int> newEntries = await fakeRequest(items.length, items.length + 10);
-          setState(() {
-            items.addAll(newEntries);
-          });
-          // 下一个请求可以开始了
-          _isLoadingMore = false;
-        }
-      }
-    });
+    _requestData();
   }
 
-  Future<List<int>> fakeRequest(int from, int to) async {
-    return Future.delayed(Duration(seconds: 5), () {
-      return List.generate(to - from, (i) => i + from);
-    });
+  Future<void> _requestData() async {
+    BaseUserStore userStore = ScopedModel.of(context);
+    print(userStore.toString());
+    if (userStore.isLogin) {
+      try {
+        // 延时一下
+        await Future.delayed(const Duration(seconds: 1));
+        // 开始刷新token
+        LoginResultBean loginResult = await RequestApi.refreshToken();
+        print(loginResult);
+        // 获取用户小区信息
+        List<Community> communityList = await RequestApi.queryUserHouse();
+        print(communityList);
+
+        // 存储
+        await PrefsUtil.saveToken(loginResult.token);
+        await PrefsUtil.saveUserBean(loginResult.user);
+
+        // 更新model
+        BaseUserStore userStore = ScopedModel.of(context);
+        // 更新一下user
+        userStore.userBean = loginResult.user;
+        // 存储 communityList
+        userStore.communityList = communityList;
+        print(communityList);
+      } catch (error) {
+        print(error);
+      }
+    }
+  }
+
+  Future<void> toSettings() async {
+    final resultValue = await SettingsPage.start(context);
+    if (resultValue != null && resultValue) {
+      // 清空本地存储
+      await PrefsUtil.clear();
+      BaseUserStore userStore = ScopedModel.of(context);
+      // 确实点击了退出登录按钮
+      userStore.isLogin = false;
+      userStore.userBean = null;
+    }
   }
 
   @override
@@ -211,25 +277,14 @@ class MineState extends State<MineWidget> {
                 centerTitle: true,
                 elevation: 0,
                 actions: <Widget>[
-                  ScopedModelDescendant<BaseUserStore>(
-                    builder: (context, child, model) => StateButtonWidget(
-                          child: Container(
-                            padding: EdgeInsets.all(12),
-                            child: Image.asset('images/setting.png'),
-                          ),
-                          onTap: () {
-                            SettingsPage.toSettings(context, model).then((resultValue) {
-                              print(resultValue);
-                              if (resultValue != null && resultValue) {
-                                // TODO  清除用户状态数据等操作
-                                /// 确实点击了退出登录按钮
-                                model.setLogin(false);
-                              }
-                            });
-                          },
-                          statePressed: BoxDecoration(color: Color(0x33909090)),
-                        ),
-                  )
+                  StateButtonWidget(
+                    child: Container(
+                      padding: EdgeInsets.all(12),
+                      child: Image.asset('images/setting.png'),
+                    ),
+                    onTap: toSettings,
+                    statePressed: BoxDecoration(color: Color(0x33909090)),
+                  ),
                 ],
               ),
             ),
@@ -246,15 +301,11 @@ class MineState extends State<MineWidget> {
                   }
                 },
                 // 显示圆形图片
-                child: Container(
+                child: SizedBox(
                   width: 70,
                   height: 70,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: _avatarFile == null ? AssetImage('images/header_icon_placeholder.png') : FileImage(_avatarFile),
-                      fit: BoxFit.cover,
-                    ),
-                    shape: BoxShape.circle,
+                  child: ClipOval(
+                    child: _avatarFile == null ? Image.asset('images/header_icon_placeholder.png') : Image.file(_avatarFile),
                   ),
                 ),
               ),
@@ -262,42 +313,29 @@ class MineState extends State<MineWidget> {
           ],
         ),
         Expanded(
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              CupertinoSliverRefreshControl(
-                onRefresh: () {
-                  print('开始下拉刷新');
-                  return Future<void>.delayed(const Duration(seconds: 2)).then<void>((_) {
-                    if (mounted) {
-                      setState(() {
-                        print('下拉刷新完成');
-                      });
-                    }
-                  });
-                },
-                builder: _buildRefreshWidget,
-              ),
-              SliverSafeArea(
-                top: false, // Top safe area is consumed by the navigation bar.
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index < items.length) {
-                        // 前面的item项
-                        return CommunityItemWidget(index);
-                      } else {
-                        // 最后一个 显示加载更多
-                        return LoadingMoreWidget(loadMoreState);
-                      }
-                    },
-                    addSemanticIndexes: true,
-                    // 比 items 要多一项  主要是为了加上最后一个  加载 widget
-                    childCount: items.length + 1,
+          child: Container(
+            color: Color(0xFFF0F0F0),
+            child: ScopedModelDescendant(
+              builder: (context, child, BaseUserStore userStore) => CustomScrollView(
+                    slivers: <Widget>[
+                      CupertinoSliverRefreshControl(
+                        onRefresh: _requestData,
+                        builder: _buildRefreshWidget,
+                      ),
+                      SliverSafeArea(
+                        top: false, // Top safe area is consumed by the navigation bar.
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return CommunityItemWidget(userStore.communityList[index]);
+                            },
+                            childCount: userStore.communityList?.length ?? 0,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],
@@ -305,9 +343,21 @@ class MineState extends State<MineWidget> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('MineWidget didChangeDependencies');
+  }
+
+  @override
   void didUpdateWidget(MineWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     print('MineWidget didUpdateWidget');
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print('MineWidget reassemble');
   }
 
   @override
@@ -320,17 +370,5 @@ class MineState extends State<MineWidget> {
   void dispose() {
     super.dispose();
     print('MineWidget dispose');
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    print('MineWidget reassemble');
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print('MineWidget didChangeDependencies');
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:scan_access/bean/bool_result_bean.dart';
-import 'package:scan_access/bean/login_result_bean.dart';
+import '../bean/index.dart';
 
 import 'dio_util.dart';
+
+import 'dart:convert';
 
 const GET = 'get';
 const POST = 'post';
@@ -55,5 +56,16 @@ class RequestApi {
   /// 刷新 token
   static Future<LoginResultBean> refreshToken() {
     return dio.post('v1/account/users/token-login/').then((response) => LoginResultBean.fromJson(response.data));
+  }
+
+  /// 获取用户的房屋信息
+  static Future<List<Community>> queryUserHouse() {
+    return dio.get('v1/account/app/scene/').then((response) {
+      List<Community> res = [];
+      for (var dataItem in response.data == null ? [] : response.data) {
+        res.add(dataItem == null ? null : Community.fromJson(dataItem));
+      }
+      return res;
+    });
   }
 }

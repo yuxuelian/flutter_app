@@ -26,12 +26,13 @@ class DioUtil {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (RequestOptions options) async {
         // 获取存储在磁盘上的  token  信息
-        final token = await PrefsUtil.getInstance().getToken();
+        final token = await PrefsUtil.getToken();
         // 是否存储了  token  信息
         if (token.isNotEmpty) {
           // token  存在  则添加到请求头中
           options.headers['Authorization'] = 'JWT $token';
         }
+        options.headers['Connection'] = 'close';
         return options;
       },
       onResponse: (Response response) {

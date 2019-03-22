@@ -7,6 +7,7 @@ import 'login_page.dart';
 import 'home/disable_card_widget.dart';
 import 'home/enable_card_widget.dart';
 import 'home/mine_widget.dart';
+import '../prefs/prefs_util.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,7 +20,9 @@ class HomeState extends State<HomePage> {
 
   static const MINE_INDEX = 1;
 
-  void clickTabItem(int index, bool isLogin) {
+  void clickTabItem(int index) {
+    BaseUserStore baseUserStore = ScopedModel.of(context);
+    final isLogin = baseUserStore.isLogin;
     if (index == MINE_INDEX) {
       // 点击  我的
       if (isLogin) {
@@ -29,9 +32,7 @@ class HomeState extends State<HomePage> {
         });
       } else {
         // 未登录(跳转到登录页面)
-        LoginPage.toLoginPage(context).then((res) {
-          print(res);
-        });
+        LoginPage.start(context);
       }
     } else {
       setState(() {
@@ -44,13 +45,23 @@ class HomeState extends State<HomePage> {
   void initState() {
     super.initState();
     this.mCurrentIndex = 0;
+    _initUserStore();
+  }
+
+  Future<void> _initUserStore() async {
+    // 获取本地存储的用户信息
+    final userBean = await PrefsUtil.getUserBean();
+    final loginState = userBean != null;
+    // 修改内存中的UserBean
+    BaseUserStore userStore = ScopedModel.of(context);
+    userStore.userBean = userBean;
+    userStore.isLogin = loginState;
   }
 
   @override
   Widget build(BuildContext context) {
-    print('HomeState   build');
-    return ScopedModelDescendant<BaseUserStore>(builder: (context, child, model) {
-      if (!model.isLogin) {
+    return ScopedModelDescendant<BaseUserStore>(builder: (context, child, userStore) {
+      if (!userStore.isLogin) {
         // 退出登录(主动选择到首页)
         mCurrentIndex = 0;
       }
@@ -63,18 +74,18 @@ class HomeState extends State<HomePage> {
               Expanded(
                 child: IndexedStack(
                   children: <Widget>[
-                    model.isLogin ? EnableCardWidget() : DisableCardWidget(),
-                    MineWidget(),
+                    userStore.isLogin ? EnableCardWidget() : DisableCardWidget(),
+                    userStore.isLogin ? MineWidget() : Container(),
                   ],
                   index: mCurrentIndex,
                 ),
               ),
               CupertinoTabBar(
                 currentIndex: mCurrentIndex,
-                backgroundColor: Color(0xFF222222),
+                backgroundColor: Color(0xFF202020),
                 activeColor: Color(0xFFEB891A),
                 inactiveColor: Colors.white,
-                border: Border(top: BorderSide(color: Colors.black, width: 2)),
+                border: Border(top: BorderSide(color: Color(0xFF303030), width: 2)),
                 items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
                     icon: Icon(CupertinoIcons.home),
@@ -85,9 +96,7 @@ class HomeState extends State<HomePage> {
                     title: Text('我的'),
                   ),
                 ],
-                onTap: (index) {
-                  clickTabItem(index, model.isLogin);
-                },
+                onTap: clickTabItem,
               ),
             ],
           ),

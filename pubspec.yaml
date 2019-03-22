@@ -1,5 +1,5 @@
 name: scan_access
-description: A new Flutter application.
+description: A  Flutter application.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -43,6 +43,11 @@ dependencies:
   # 加载动画
   flutter_spinkit: ^3.1.0
   shimmer: ^1.0.0
+
+  # 倒计时
+  countdown: ^0.1.0
+  base32: ^1.0.1
+  crypto: ^2.0.6
 
 #  uuid: ^1.0.0
 #  video_player: 0.10.0+2

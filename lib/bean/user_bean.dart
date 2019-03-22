@@ -1,7 +1,6 @@
 import 'dart:convert' show json;
 
 class UserBean {
-
   String avatar;
   String id;
   String key;
@@ -20,6 +19,6 @@ class UserBean {
 
   @override
   String toString() {
-    return '{"avatar": ${avatar != null?'${json.encode(avatar)}':'null'},"id": ${id != null?'${json.encode(id)}':'null'},"key": ${key != null?'${json.encode(key)}':'null'},"nickname": ${nickname != null?'${json.encode(nickname)}':'null'},"username": ${username != null?'${json.encode(username)}':'null'}}';
+    return '{"avatar": ${avatar != null ? '${json.encode(avatar)}' : 'null'},"id": ${id != null ? '${json.encode(id)}' : 'null'},"key": ${key != null ? '${json.encode(key)}' : 'null'},"nickname": ${nickname != null ? '${json.encode(nickname)}' : 'null'},"username": ${username != null ? '${json.encode(username)}' : 'null'}}';
   }
 }

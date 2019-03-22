@@ -1,40 +1,74 @@
 import 'package:scoped_model/scoped_model.dart';
 
+import '../bean/index.dart';
+
 abstract class BaseUserStore extends Model {
+  static final instance = _UserStore();
+
   bool get isLogin;
 
-  void setLogin(bool isLogin);
+  set isLogin(bool isLogin);
 
-  UserInfo get getUserInfo;
+  UserBean get userBean;
 
-  void setUserInfo(UserInfo userInfo);
+  set userBean(UserBean userBean);
+
+  set communityList(List<Community> communityList);
+
+  List<Community> get communityList;
+
+  Community get selectedCommunity;
+
+  set selectedCommunity(Community community);
 }
 
-class UserStore extends BaseUserStore {
-  bool loginState = false;
+class _UserStore extends BaseUserStore {
+  UserBean _userBean;
 
-  UserInfo userInfo = UserInfo();
+  List<Community> _communityList;
+
+  bool _isLogin = false;
+
+  Community _selectedCommunity;
 
   @override
-  bool get isLogin => loginState;
+  bool get isLogin => _isLogin;
 
   @override
-  void setLogin(bool isLogin) {
-    this.loginState = isLogin;
+  set isLogin(bool isLogin) {
+    this._isLogin = isLogin;
     notifyListeners();
   }
 
   @override
-  UserInfo get getUserInfo => this.userInfo;
+  UserBean get userBean => this._userBean;
 
   @override
-  void setUserInfo(UserInfo userInfo) {
-    this.userInfo = userInfo;
+  set userBean(UserBean userBean) {
+    this._userBean = userBean;
     notifyListeners();
   }
-}
 
-class UserInfo {
-  String phone = '15682070710';
-  String version = '1.0.0';
+  @override
+  List<Community> get communityList => _communityList;
+
+  @override
+  set communityList(List<Community> communityList) {
+    this._communityList = communityList;
+    notifyListeners();
+  }
+
+  @override
+  String toString() {
+    return 'userBean = ${_userBean.toString()},isLogin = ${isLogin.toString()}';
+  }
+
+  @override
+  set selectedCommunity(Community index) {
+    this._selectedCommunity = index;
+    notifyListeners();
+  }
+
+  @override
+  Community get selectedCommunity => _selectedCommunity;
 }

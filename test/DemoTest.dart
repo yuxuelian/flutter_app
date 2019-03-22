@@ -8,7 +8,7 @@ class DemoTest {
 
   DemoTest.fromParams({this.id, this.userId, this.body, this.title});
 
-  factory DemoTest(jsonStr) => jsonStr == null ? null : jsonStr is String ? new DemoTest.fromJson(json.decode(jsonStr)) : new DemoTest.fromJson(jsonStr);
+  factory DemoTest(jsonStr) => jsonStr == null ? null : jsonStr is String ?  DemoTest.fromJson(json.decode(jsonStr)) :  DemoTest.fromJson(jsonStr);
 
   DemoTest.fromJson(jsonRes) {
     id = jsonRes['id'];

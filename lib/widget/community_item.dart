@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
+import '../bean/index.dart';
 import '../page/scene_home_page.dart';
-import 'state_button.dart';
+import '../store/user_store.dart';
 
 class CommunityItemWidget extends StatefulWidget {
-  final int index;
+  final Community community;
 
-  CommunityItemWidget(this.index);
+  CommunityItemWidget(this.community);
 
   @override
-  State<StatefulWidget> createState() => CommunityItemState(index);
+  State<StatefulWidget> createState() => CommunityItemState();
 }
 
 class CommunityItemState extends State<CommunityItemWidget> {
-  final int index;
-
-  CommunityItemState(this.index);
-
   @override
   Widget build(BuildContext context) {
-    return StateButtonWidget(
+    return FlatButton(
+      color: Colors.white,
+      splashColor: Colors.transparent,
+      highlightColor: Color(0xFFD0D0D0),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: EdgeInsets.all(0),
       child: Container(
         height: 40,
-        decoration: BoxDecoration(color: Colors.transparent, border: Border(top: BorderSide(color: Color(0xFFD0D0D0)))),
+        decoration: BoxDecoration(border: Border(top: BorderSide(color: Color(0xFFD0D0D0)))),
         child: Row(
           children: <Widget>[
             Padding(
@@ -36,8 +39,8 @@ class CommunityItemState extends State<CommunityItemWidget> {
             ),
             Center(
               child: Text(
-                '成都->汇锦广场 $index',
-                style: TextStyle(fontSize: 14, color: Colors.black),
+                '${widget.community.address}->${widget.community.name}',
+                style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
               ),
             ),
             Expanded(
@@ -53,10 +56,12 @@ class CommunityItemState extends State<CommunityItemWidget> {
           ],
         ),
       ),
-      statePressed: BoxDecoration(color: Color(0xFFD0D0D0)),
-      onTap: () {
+      onPressed: () {
+        // 记录点击的index
+        BaseUserStore userStore = ScopedModel.of(context);
+        userStore.selectedCommunity = widget.community;
         // 跳转到场景主页
-        SceneHomePage.toSceneHomePage(context);
+        SceneHomePage.start(context);
       },
     );
   }

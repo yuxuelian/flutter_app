@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:scan_access/widget/logo.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qr/qr.dart';
+import 'package:scan_access/widget/logo.dart';
+import 'package:scoped_model/scoped_model.dart';
+
+import '../../store/user_store.dart';
+import '../../totp/totp.dart';
 
 class EnableCardWidget extends StatefulWidget {
   @override
@@ -9,11 +14,33 @@ class EnableCardWidget extends StatefulWidget {
 }
 
 class EnableCardState extends State<EnableCardWidget> {
+  Timer _timer;
+  int totpCode;
+
+  @override
+  void initState() {
+    super.initState();
+    // 初始化的时候获取一次
+    this.totpCode = generateTOTPCode();
+    // 每秒计算一次totp值
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        totpCode = generateTOTPCode();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF202020),
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xFF222222),
       appBar: AppBar(
         centerTitle: false,
         title: Text('我的电子门禁卡', style: TextStyle(fontSize: 16)),
@@ -34,13 +61,15 @@ class EnableCardState extends State<EnableCardWidget> {
                 Expanded(
                   child: Container(),
                 ),
-                QrImage(
-                  data: '12345678123456781234567812345678',
-                  onError: (ex) {
-                    print('[QR] ERROR - $ex');
-                  },
-                  version: 2,
-                ),
+                ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                  return QrImage(
+                    data: '${userStore.userBean?.key ?? "---"}$totpCode',
+                    onError: (ex) {
+                      print('[QR] ERROR - $ex');
+                    },
+                    version: 2,
+                  );
+                }),
                 Expanded(
                   child: Container(),
                 ),

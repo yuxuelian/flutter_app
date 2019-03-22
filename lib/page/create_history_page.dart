@@ -7,17 +7,11 @@ import 'package:scan_access/widget/qr_history_item.dart';
 
 class CreateHistoryPage extends StatefulWidget {
   /// 跳转到设置页面
-  static Future<T> toCreateHistory<T extends Object>(BuildContext context) {
+  static Future<T> start<T extends Object>(BuildContext context) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          // 要跳转的页面
-          return CreateHistoryPage();
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // 返回一个动画
-          return MyApp.createTransition(animation, child);
-        },
+        pageBuilder: (context, animation, secondaryAnimation) => CreateHistoryPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
       ),
     );
@@ -44,10 +38,8 @@ class CreateHistoryState extends State<CreateHistoryPage> {
         res = Opacity(
           opacity: opacityCurve.transform(min(pulledExtent / refreshTriggerPullDistance, 1.0)),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Expanded(
-                child: Container(),
-              ),
               Icon(
                 CupertinoIcons.down_arrow,
                 color: CupertinoColors.inactiveGray,
@@ -60,10 +52,7 @@ class CreateHistoryState extends State<CreateHistoryPage> {
                   fontSize: 16,
                   color: Color(0xFF606060),
                 ),
-              ),
-              Expanded(
-                child: Container(),
-              ),
+              )
             ],
           ),
         );

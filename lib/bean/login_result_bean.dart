@@ -7,11 +7,11 @@ class LoginResultBean {
 
   LoginResultBean.fromParams({this.token, this.user});
 
-  factory LoginResultBean(jsonStr) => jsonStr == null ? null : jsonStr is String ? new LoginResultBean.fromJson(json.decode(jsonStr)) : new LoginResultBean.fromJson(jsonStr);
+  factory LoginResultBean(jsonStr) => jsonStr == null ? null : jsonStr is String ? LoginResultBean.fromJson(json.decode(jsonStr)) : LoginResultBean.fromJson(jsonStr);
 
   LoginResultBean.fromJson(jsonRes) {
     token = jsonRes['token'];
-    user = jsonRes['user'] == null ? null : new UserBean.fromJson(jsonRes['user']);
+    user = jsonRes['user'] == null ? null : UserBean.fromJson(jsonRes['user']);
   }
 
   @override

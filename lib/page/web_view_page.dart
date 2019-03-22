@@ -5,17 +5,11 @@ import 'package:scan_access/main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatelessWidget {
-  static Future<T> toWebViewPage<T extends Object>(BuildContext context, String title, String url) {
+  static Future<T> start<T extends Object>(BuildContext context, String title, String url) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-          // 要跳转的页面
-          return WebViewPage(title: title, url: url);
-        },
-        transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-          // 返回一个动画
-          return MyApp.createTransition(animation, child);
-        },
+        pageBuilder: (context, animation, secondaryAnimation) => WebViewPage(title: title, url: url),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
       ),
     );
@@ -31,6 +25,7 @@ class WebViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(title, style: TextStyle(fontSize: 16, color: Colors.white)),

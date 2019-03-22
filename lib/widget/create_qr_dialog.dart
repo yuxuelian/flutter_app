@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:scan_access/widget/logo.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:scoped_model/scoped_model.dart';
 
+import '../bean/index.dart';
+import '../page/visitor_qr_code_page.dart';
+import '../store/user_store.dart';
 import 'custom_alert_dialog.dart';
-import 'state_button.dart';
+import 'logo.dart';
 
-class CreateQrDialogWidget extends StatelessWidget {
+class CreateQrDialogWidget extends StatefulWidget {
+  @override
+  State createState() => _CreateQrDialogState();
+}
+
+class _CreateQrDialogState extends State<CreateQrDialogWidget> {
+  HouseMember _dropDownValue;
+
   @override
   Widget build(BuildContext context) {
     return CustomDialogWidget(
@@ -69,15 +79,11 @@ class CreateQrDialogWidget extends StatelessWidget {
                     height: 40,
                     child: Row(
                       children: <Widget>[
-                        Center(
-                          child: Image.asset('images/icon_validate_time.png', width: 20),
-                        ),
+                        Image.asset('images/icon_validate_time.png', width: 20),
                         Padding(
                           padding: EdgeInsets.only(left: 16),
                         ),
-                        Center(
-                          child: Text('请设置过期时间'),
-                        ),
+                        Text('请设置过期时间'),
                       ],
                     ),
                   ),
@@ -90,43 +96,41 @@ class CreateQrDialogWidget extends StatelessWidget {
                   height: 40,
                   child: Row(
                     children: <Widget>[
-                      Center(
-                        child: Image.asset('images/icon_house.png', width: 20),
-                      ),
+                      Image.asset('images/icon_house.png', width: 20),
                       Padding(
                         padding: EdgeInsets.only(left: 16),
                       ),
-                      Center(
-                        child: Text('请选择房屋'),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      PopupMenuButton<String>(
-                        padding: const EdgeInsets.all(8),
-                        icon: const Icon(Icons.arrow_drop_down),
-                        itemBuilder: (context) => <PopupMenuItem<String>>[
-                              PopupMenuItem(
-                                value: "测试1",
-                                child: Text("测试1"),
+                      ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                        return DropdownButton<HouseMember>(
+                          value: _dropDownValue,
+                          elevation: 0,
+                          isDense: true,
+                          hint: SizedBox(
+                            width: 190,
+                            child: Text('请选择房屋', style: TextStyle(color: Color(0xFF303030)), overflow: TextOverflow.ellipsis),
+                          ),
+                          onChanged: (HouseMember newValue) {
+                            setState(() {
+                              _dropDownValue = newValue;
+                            });
+                          },
+                          items: userStore.selectedCommunity.house_member.map<DropdownMenuItem<HouseMember>>((value) {
+                            return DropdownMenuItem<HouseMember>(
+                              value: value,
+                              child: Container(
+                                width: 190,
+                                color: Colors.white,
+                                height: double.infinity,
+                                child: Text(
+                                  value.fullName,
+                                  style: TextStyle(color: Color(0xFF303030)),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              PopupMenuItem(
-                                value: "测试2",
-                                child: Text("测试2"),
-                              ),
-                              PopupMenuItem(
-                                value: "测试3",
-                                child: Text("测试3"),
-                              ),
-                              PopupMenuItem(
-                                value: "测试4",
-                                child: Text("测试4"),
-                              ),
-                            ],
-                        onSelected: (String res) {
-                          print(res);
-                        },
-                      ),
+                            );
+                          }).toList(),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -136,12 +140,19 @@ class CreateQrDialogWidget extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: StateButtonWidget(
-                        child: Center(child: Text('生成历史', style: TextStyle(fontSize: 14, color: Color(0xFF606060)))),
-                        onTap: () {
-                          // 点击生成历史
-                          Navigator.of(context, rootNavigator: true).pop(false);
-                        },
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints.expand(),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Color(0xFFD0D0D0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))),
+                          child: Text('生成历史', style: TextStyle(fontSize: 14, color: Color(0xFF606060))),
+                          onPressed: () {
+                            // 点击生成历史
+                            Navigator.of(context, rootNavigator: true).pop(false);
+                          },
+                        ),
                       ),
                     ),
                     Container(
@@ -150,7 +161,24 @@ class CreateQrDialogWidget extends StatelessWidget {
                       child: Column(),
                     ),
                     Expanded(
-                      child: Center(child: Text('立即生成', style: TextStyle(fontSize: 14, color: Color(0xFFEB891A)))),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints.expand(),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Color(0xFFD0D0D0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(15))),
+                          child: Text('立即生成', style: TextStyle(fontSize: 14, color: Color(0xFFEB891A))),
+                          onPressed: () {
+                            // TODO 联网创建访客二维码
+
+                            // TODO 关闭当前页面
+                            Navigator.of(context).pop();
+                            // TODO 跳转到访客二维码显示二面
+                            VisitorQrCodePage.start(context);
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),

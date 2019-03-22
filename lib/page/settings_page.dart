@@ -9,17 +9,11 @@ import 'web_view_page.dart';
 
 class SettingsPage extends StatelessWidget {
   /// 跳转到设置页面
-  static Future<T> toSettings<T extends Object>(BuildContext context, BaseUserStore model) {
+  static Future<T> start<T extends Object>(BuildContext context) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          // 要跳转的页面
-          return SettingsPage();
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // 返回一个动画
-          return MyApp.createTransition(animation, child);
-        },
+        pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
       ),
     );
@@ -36,11 +30,9 @@ class SettingsPage extends StatelessWidget {
           ),
     ).then((resValue) {
       // 返回值
-      if (resValue != null) {
-        if (resValue) {
-          // 点击了确定(退出当前页,并返回 true )
-          Navigator.of(context, rootNavigator: true).pop(true);
-        }
+      if (resValue != null && resValue) {
+        // 点击了确定(退出当前页,并返回 true )
+        Navigator.of(context, rootNavigator: true).pop(true);
       }
     });
   }
@@ -76,6 +68,7 @@ class SettingsPage extends StatelessWidget {
     menuList.removeLast();
 
     return Scaffold(
+      backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('个人信息', style: TextStyle(fontSize: 16, color: Colors.white)),
@@ -163,11 +156,11 @@ class MenuItemState extends State<MenuItem> {
             Expanded(
               child: Container(),
             ),
-            ScopedModelDescendant<BaseUserStore>(builder: (context, child, model) {
+            ScopedModelDescendant<BaseUserStore>(builder: (context, child, userStore) {
               if (menuItemData.id == 0) {
-                return Text(model.getUserInfo.phone);
+                return Text(userStore.userBean?.username ?? "---");
               } else if (menuItemData.id == 1) {
-                return Text(model.getUserInfo.version);
+                return Text('1.0.0');
               }
               return Text('');
             }),
@@ -193,12 +186,12 @@ class MenuItemState extends State<MenuItem> {
           case 3:
             break;
           case 4:
-            WebViewPage.toWebViewPage(context, '用户协议', 'https://api.yishi-ai.com/static/html/license.html').then((res) {
+            WebViewPage.start(context, '用户协议', 'https://api.yishi-ai.com/static/html/license.html').then((res) {
               print(res);
             });
             break;
           case 5:
-            WebViewPage.toWebViewPage(context, '使用说明', 'https://api.yishi-ai.com/static/file/direction/index.html').then((res) {
+            WebViewPage.start(context, '使用说明', 'https://api.yishi-ai.com/static/file/direction/index.html').then((res) {
               print(res);
             });
             break;

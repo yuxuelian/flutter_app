@@ -32,23 +32,30 @@ class MessageDialogWidget extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: StateButtonWidget(
+                    child: FlatButton(
+                      color: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      highlightColor: Color(0xFFD0D0D0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))),
                       child: Center(child: Text(leftBtnText)),
-                      onTap: () {
+                      onPressed: () {
                         Navigator.of(context, rootNavigator: true).pop(false);
                       },
                     ),
                   ),
-
                   Container(
                     width: 1,
                     color: Color(0xFFD0D0D0),
                     child: Column(),
                   ),
                   Expanded(
-                    child: StateButtonWidget(
+                    child: FlatButton(
+                        color: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        highlightColor: Color(0xFFD0D0D0),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(15))),
                         child: Center(child: Text(rightBtnText, style: TextStyle(color: Color(0xFFEB891A)))),
-                        onTap: () {
+                        onPressed: () {
                           Navigator.of(context, rootNavigator: true).pop(true);
                         }),
                   ),

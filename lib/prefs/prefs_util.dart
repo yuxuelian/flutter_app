@@ -1,26 +1,41 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+import '../bean/index.dart';
 
 class PrefsUtil {
   PrefsUtil._();
 
-  static const TOKEN = 'token';
+  static const _TOKEN = 'token';
+  static const _USER_BEAN = 'user_bean';
 
-  static PrefsUtil _instance;
+  static Future<String> getToken() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getString(_TOKEN) ?? '';
+  }
 
-  static PrefsUtil getInstance() {
-    if (_instance == null) {
-      _instance = PrefsUtil._();
+  static Future<UserBean> getUserBean() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final userBeanStr = sharedPreferences.getString(_USER_BEAN);
+    if (userBeanStr != null) {
+      return UserBean.fromJson(json.decode(userBeanStr));
+    } else {
+      return null;
     }
-    return _instance;
   }
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  Future<String> getToken() async {
-    return (await _prefs).getString(TOKEN) ?? '';
+  static Future<bool> saveToken(String value) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.setString(_TOKEN, value);
   }
 
-  Future<bool> saveToken(String value) async {
-    return (await _prefs).setString(TOKEN, value);
+  static Future<bool> saveUserBean(UserBean value) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.setString(_USER_BEAN, value.toString());
+  }
+
+  static Future<bool> clear() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.clear();
   }
 }

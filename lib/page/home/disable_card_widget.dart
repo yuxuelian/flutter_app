@@ -13,8 +13,8 @@ class DisableCardState extends State<DisableCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF202020),
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xFF222222),
       appBar: AppBar(
         centerTitle: false,
         title: Text('我的电子门禁卡', style: TextStyle(fontSize: 16)),
@@ -38,7 +38,7 @@ class DisableCardState extends State<DisableCardWidget> {
                 Center(
                   child: Text(
                     '状态:未登录',
-                    style: TextStyle(fontSize: 14, color: Colors.black),
+                    style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
                   ),
                 ),
                 Expanded(
@@ -62,7 +62,7 @@ class DisableCardState extends State<DisableCardWidget> {
                     ),
                     onTap: () {
                       // 跳转到登录页面
-                      LoginPage.toLoginPage(context).then((res) {
+                      LoginPage.start(context).then((res) {
                         print(res);
                       });
                     },
