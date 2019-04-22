@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'custom_alert_dialog.dart';
-import 'state_button.dart';
 
 class MessageDialogWidget extends StatelessWidget {
   final String message;
@@ -23,7 +22,7 @@ class MessageDialogWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              height: 100,
+              height: 120,
               decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
               child: Center(child: Text(message)),
             ),

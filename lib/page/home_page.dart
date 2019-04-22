@@ -88,12 +88,12 @@ class HomeState extends State<HomePage> {
                 border: Border(top: BorderSide(color: Color(0xFF303030), width: 2)),
                 items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.home),
-                    title: Text('首页'),
+                    icon: ImageIcon(AssetImage('assets/navigation_home_normal.png')),
+                    title: Text('首页', style: TextStyle(fontSize: 13)),
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.profile_circled),
-                    title: Text('我的'),
+                    icon: ImageIcon(AssetImage('assets/navigation_mine_normal.png')),
+                    title: Text('我的', style: TextStyle(fontSize: 13)),
                   ),
                 ],
                 onTap: clickTabItem,

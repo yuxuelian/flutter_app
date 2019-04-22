@@ -45,7 +45,7 @@ class SettingsPage extends StatelessWidget {
       ),
       // logo
       Center(
-        child: Image.asset('images/login_logo.png', width: 180),
+        child: Image.asset('assets/login_logo.png', width: 180),
       ),
       Padding(
         padding: EdgeInsets.only(top: 30),
@@ -53,12 +53,12 @@ class SettingsPage extends StatelessWidget {
     ];
 
     <MenuItemData>[
-      MenuItemData(0, '手机号', 'images/icon_mine_phone.png'),
-      MenuItemData(1, '版本信息', 'images/icon_mine_setting.png'),
-      MenuItemData(2, '检查更新', 'images/icon_check_update.png'),
-      MenuItemData(3, '修改密码', 'images/icon_set_pwd.png'),
-      MenuItemData(4, '用户协议', 'images/icon_license.png'),
-      MenuItemData(5, '使用说明', 'images/icon_mine_user.png'),
+      MenuItemData(0, '手机号', 'assets/icon_mine_phone.png'),
+      MenuItemData(1, '版本信息', 'assets/icon_mine_setting.png'),
+      MenuItemData(2, '检查更新', 'assets/icon_check_update.png'),
+//      MenuItemData(3, '修改密码', 'assets/icon_set_pwd.png'),
+      MenuItemData(4, '用户协议', 'assets/icon_license.png'),
+      MenuItemData(5, '使用说明', 'assets/icon_mine_user.png'),
     ].forEach((menuItemData) {
       menuList.add(MenuItem(menuItemData));
       menuList.add(CupLineWidget());
@@ -167,7 +167,7 @@ class MenuItemState extends State<MenuItem> {
             Padding(
               padding: EdgeInsets.only(left: 6),
             ),
-            Image.asset('images/right_back.png', width: 16),
+            Image.asset('assets/right_back.png', width: 16),
             Padding(
               padding: EdgeInsets.only(right: 20),
             ),

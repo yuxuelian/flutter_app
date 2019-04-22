@@ -198,7 +198,7 @@ class LoginPageState extends State<LoginPage> {
           decoration: InputDecoration(
             // 主要目的是隐藏Counter
             counter: Container(),
-              icon: Image.asset('images/login_user.png', width: 26),
+              icon: Image.asset('assets/login_user.png', width: 26),
               hintText: '请输入手机号',
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 10, bottom: 10),
@@ -273,7 +273,7 @@ class LoginPageState extends State<LoginPage> {
           decoration: InputDecoration(
             // 主要目的是隐藏Counter
             counter: Container(),
-              icon: Image.asset(isPwdLoginMode ? 'images/login_password.png' : 'images/login_auth_code.png', width: 26),
+              icon: Image.asset(isPwdLoginMode ? 'assets/login_password.png' : 'assets/login_auth_code.png', width: 26),
               hintText: isPwdLoginMode ? '请输入8-20位密码' : '请输入6位验证码',
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 10, bottom: 10),
@@ -303,7 +303,7 @@ class LoginPageState extends State<LoginPage> {
     if (isPwdLoginMode) {
       pwdInputWidget.add(GestureDetector(
         onTap: _changeShowPwd,
-        child: Container(height: 30, width: 30, child: Image.asset(isShowPwd ? 'images/mimabukejian.png' : 'images/mimakejian.png', width: 30)),
+        child: Container(height: 30, width: 30, child: Image.asset(isShowPwd ? 'assets/mimabukejian.png' : 'assets/mimakejian.png', width: 30)),
         ));
     }
 
@@ -322,7 +322,7 @@ class LoginPageState extends State<LoginPage> {
             ),
           // logo
           Center(
-            child: Image.asset('images/login_logo.png', width: 180),
+            child: Image.asset('assets/login_logo.png', width: 180),
             ),
           Padding(
             padding: EdgeInsets.only(top: 30),
@@ -409,7 +409,7 @@ class LoginPageState extends State<LoginPage> {
                   '《用户协议》',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF2181D2),
+                    color: Color(0xFF2196F3),
                     ),
                   ),
                 onTap: () {

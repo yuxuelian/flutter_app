@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:scan_access/widget/logo.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../../store/user_store.dart';
 import '../../totp/totp.dart';
+import '../../widget/logo.dart';
 
 class EnableCardWidget extends StatefulWidget {
   @override
@@ -53,7 +53,7 @@ class EnableCardState extends State<EnableCardWidget> {
           height: 462,
           child: Material(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Color(0xFFEBEBEB),
+            color: Color(0xFFE0E0E0),
             elevation: 0,
             child: Column(
               children: <Widget>[

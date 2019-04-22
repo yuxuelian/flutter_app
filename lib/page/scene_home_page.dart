@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scan_access/main.dart';
 import 'package:scan_access/widget/include.dart';
-import 'package:scan_access/widget/state_button.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'create_history_page.dart';
 import 'manage_house_page.dart';
 import 'manage_member_page.dart';
+import '../store/user_store.dart';
 
 class SceneHomePage extends StatelessWidget {
   static Future<T> start<T extends Object>(BuildContext context) {
@@ -77,21 +78,23 @@ class SceneHomePage extends StatelessWidget {
       backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('场景主页', style: TextStyle(fontSize: 16, color: Colors.white)),
+        title: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+          return Text(userStore.selectedCommunity.name, style: TextStyle(fontSize: 16, color: Colors.white));
+        }),
         centerTitle: true,
         elevation: 0,
       ),
       body: Column(
         children: <Widget>[
-          Image.asset('images/scene_title_img.png', width: 360),
+          Image.asset('assets/scene_title_img.png', width: 360),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _buildMenuButton('images/icon_home_qr_code1.png', '生成访客二维码', () {
+              _buildMenuButton('assets/icon_home_qr_code1.png', '生成访客二维码', () {
                 // TODO 显示二维码生成对话框
                 _showCreateQrDialog(context);
               }),
-              _buildMenuButton('images/icon_home_qr_code2.png', '租住人员注册', () {
+              _buildMenuButton('assets/icon_home_qr_code2.png', '租住人员注册', () {
                 // TODO 跳转到租客注册界面
                 ManageMemberPage.start(context);
               }),
@@ -100,11 +103,11 @@ class SceneHomePage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _buildMenuButton('images/icon_home_house.png', '我的房屋', () {
+              _buildMenuButton('assets/icon_home_house.png', '我的房屋', () {
                 // TODO 查看我的房屋
                 ManageHousePage.start(context);
               }),
-              _buildMenuButton('images/icon_home_family.png', '家庭人员注册', () {
+              _buildMenuButton('assets/icon_home_family.png', '家庭人员注册', () {
                 // TODO 注册家庭成员
                 ManageMemberPage.start(context);
               }),

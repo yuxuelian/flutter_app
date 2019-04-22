@@ -7,8 +7,9 @@ import '../store/user_store.dart';
 
 class CommunityItemWidget extends StatefulWidget {
   final Community community;
+  final bool enable;
 
-  CommunityItemWidget(this.community);
+  CommunityItemWidget(this.community, {bool enable}) : this.enable = enable ?? true;
 
   @override
   State<StatefulWidget> createState() => CommunityItemState();
@@ -31,37 +32,25 @@ class CommunityItemState extends State<CommunityItemWidget> {
             Padding(
               padding: EdgeInsets.only(left: 20),
             ),
-            Center(
-              child: Image.asset('images/icon_community.png', width: 20),
-            ),
+            Image.asset('assets/icon_community.png', width: 20),
             Padding(
               padding: EdgeInsets.only(left: 10),
             ),
-            Center(
-              child: Text(
-                '${widget.community.address}->${widget.community.name}',
-                style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
-              ),
+            Text(
+              '${widget.community.address} -> ${widget.community.name}',
+              style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
             ),
-            Expanded(
-              flex: 1,
-              child: Container(),
-            ),
-            Center(
-              child: Image.asset('images/right_back.png', width: 16),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 20),
-            )
           ],
         ),
       ),
       onPressed: () {
-        // 记录点击的index
-        BaseUserStore userStore = ScopedModel.of(context);
-        userStore.selectedCommunity = widget.community;
-        // 跳转到场景主页
-        SceneHomePage.start(context);
+        if (widget.enable) {
+          // 记录点击的index
+          BaseUserStore userStore = ScopedModel.of(context);
+          userStore.selectedCommunity = widget.community;
+          // 跳转到场景主页
+          SceneHomePage.start(context);
+        }
       },
     );
   }

@@ -3,6 +3,7 @@ import 'package:scan_access/page/home_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'store/user_store.dart';
+import 'dart:io';
 
 void main() => runApp(MyApp());
 
@@ -24,6 +25,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    print('Platform.isAndroid = ${Platform.isAndroid}');
     return ScopedModel<BaseUserStore>(
       model: BaseUserStore.instance,
       child: MaterialApp(

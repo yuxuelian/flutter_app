@@ -27,11 +27,12 @@ class DisableCardState extends State<DisableCardWidget> {
           height: 480,
           child: Material(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Color(0xFFEBEBEB),
+            color: Color(0xFFE0E0E0),
             elevation: 0,
             child: Column(
               children: <Widget>[
                 LogoWidget(),
+                Container(width: double.infinity, height: 1, color: Color(0xFF606060)),
                 Expanded(
                   child: Container(),
                 ),
@@ -44,7 +45,7 @@ class DisableCardState extends State<DisableCardWidget> {
                 Expanded(
                   child: Container(),
                 ),
-                Center(child: Image.asset('images/qr_code_placeholder.png', width: 300)),
+                Center(child: Image.asset('assets/qr_code_placeholder.png', width: 300)),
                 Expanded(
                   child: Container(),
                 ),
