@@ -63,7 +63,7 @@ class EnableCardState extends State<EnableCardWidget> {
                 ),
                 ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
                   return QrImage(
-                    data: '${userStore.userBean?.key ?? "---"}$totpCode',
+                    data: '${userStore.userBean?.key ?? '---'}$totpCode',
                     onError: (ex) {
                       print('[QR] ERROR - $ex');
                     },

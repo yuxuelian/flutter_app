@@ -4,10 +4,11 @@ import 'package:scan_access/main.dart';
 import 'package:scan_access/widget/include.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../bean/index.dart';
+import '../store/user_store.dart';
 import 'create_history_page.dart';
 import 'manage_house_page.dart';
 import 'manage_member_page.dart';
-import '../store/user_store.dart';
 
 class SceneHomePage extends StatelessWidget {
   static Future<T> start<T extends Object>(BuildContext context) {
@@ -74,13 +75,12 @@ class SceneHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BaseUserStore userStore = ScopedModel.of(context);
     return Scaffold(
       backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-          return Text(userStore.selectedCommunity.name, style: TextStyle(fontSize: 16, color: Colors.white));
-        }),
+        title: Text(userStore.selectedCommunity.name, style: TextStyle(fontSize: 16, color: Colors.white)),
         centerTitle: true,
         elevation: 0,
       ),
@@ -95,8 +95,15 @@ class SceneHomePage extends StatelessWidget {
                 _showCreateQrDialog(context);
               }),
               _buildMenuButton('assets/icon_home_qr_code2.png', '租住人员注册', () {
+                final houseMemberList = <HouseMember>[];
+                userStore.selectedCommunity.house_member.forEach((houseMember) {
+                  // 业主下面才有租客
+                  if (houseMember.type == HouseMember.ENABLE_CREATE_MEMBER) {
+                    houseMemberList.add(houseMember);
+                  }
+                });
                 // TODO 跳转到租客注册界面
-                ManageMemberPage.start(context);
+                ManageMemberPage.start(context, HouseMember.TENANT, '租客管理', houseMemberList);
               }),
             ],
           ),
@@ -108,8 +115,15 @@ class SceneHomePage extends StatelessWidget {
                 ManageHousePage.start(context);
               }),
               _buildMenuButton('assets/icon_home_family.png', '家庭人员注册', () {
+                final houseMemberList = <HouseMember>[];
+                userStore.selectedCommunity.house_member.forEach((houseMember) {
+                  // 业主和租客下面才有家庭成员
+                  if (houseMember.type == HouseMember.ENABLE_CREATE_MEMBER || houseMember.type == HouseMember.TENANT) {
+                    houseMemberList.add(houseMember);
+                  }
+                });
                 // TODO 注册家庭成员
-                ManageMemberPage.start(context);
+                ManageMemberPage.start(context, HouseMember.ENABLE_INVITE_VISITOR, '家庭成员管理', houseMemberList);
               }),
             ],
           ),

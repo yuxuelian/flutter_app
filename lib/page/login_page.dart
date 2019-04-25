@@ -123,13 +123,13 @@ class LoginPageState extends State<LoginPage> {
     RequestApi.sendAuthCode(phone).then((res) {
       if (res.result) {
         // 发送成功
-        Fluttertoast.showToast(msg: "发送成功", textColor: Colors.white, backgroundColor: Colors.green);
+        Fluttertoast.showToast(msg: '发送成功', textColor: Colors.white, backgroundColor: Colors.green);
         // 启动倒计时
         startCounterDown();
       }
     }).catchError((error) {
       print(error.toString());
-      Fluttertoast.showToast(msg: "发送失败", textColor: Colors.white, backgroundColor: Colors.red);
+      Fluttertoast.showToast(msg: '发送失败', textColor: Colors.white, backgroundColor: Colors.red);
     });
   }
 
@@ -156,7 +156,7 @@ class LoginPageState extends State<LoginPage> {
       Navigator.of(context, rootNavigator: true).pop();
     }).catchError((error) {
       print(error.toString());
-      Fluttertoast.showToast(msg: "登录失败", textColor: Colors.white, backgroundColor: Colors.red);
+      Fluttertoast.showToast(msg: '登录失败', textColor: Colors.white, backgroundColor: Colors.red);
     });
   }
 

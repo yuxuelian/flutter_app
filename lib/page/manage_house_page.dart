@@ -8,7 +8,6 @@ import '../widget/community_item.dart';
 import '../widget/empty_widget.dart';
 
 class ManageHousePage extends StatefulWidget {
-  /// 跳转到设置页面
   static Future<T> start<T extends Object>(BuildContext context) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
@@ -52,7 +51,7 @@ class ManageHouseState extends State<ManageHousePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(memberItem.fullName, style: TextStyle(color: Color(0xFF606060), fontSize: 14)),
+                        Text(memberItem.fullHouseName, style: TextStyle(color: Color(0xFF606060), fontSize: 14)),
                         Text(memberItem.type_name, style: TextStyle(color: Color(0xFF606060), fontSize: 14)),
                       ],
                     ),

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../page/visitor_qr_code_page.dart';
+import '../bean/index.dart';
 
 class QrHistoryItem extends StatelessWidget {
+  final QrCodeBean qrCodeBean;
+
+  QrHistoryItem(this.qrCodeBean);
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -12,12 +17,12 @@ class QrHistoryItem extends StatelessWidget {
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: EdgeInsets.all(0),
       child: Container(
-        height: 80,
+        height: 70,
         decoration: BoxDecoration(border: Border(top: BorderSide(color: Color(0xFF2196F3)))),
         child: Row(
           children: <Widget>[
             Container(
-              width: 50,
+              width: 40,
               child: Column(
                 children: <Widget>[
                   Container(
@@ -46,24 +51,24 @@ class QrHistoryItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    '成都市->汇锦广场->1栋1单元1001室',
+                    qrCodeBean.fullHouseName,
                     maxLines: 1,
-                    style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
+                    style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                   ),
                   Row(
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          '姓名',
+                          "姓名:${qrCodeBean.name.isEmpty ? '未填写' : qrCodeBean.name}",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
+                          style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                         ),
                       ),
                       Image.asset('assets/icon_blue_indicator.png', width: 20),
                       Text(
-                        '2018-10-10 15:15:15',
+                        qrCodeBean.created_at,
                         maxLines: 1,
-                        style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
+                        style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                       ),
                       Padding(padding: EdgeInsets.only(right: 20)),
                     ],
@@ -72,16 +77,16 @@ class QrHistoryItem extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          '姓名',
+                          "手机号:${qrCodeBean.phone.isEmpty ? '未填写' : qrCodeBean.phone}",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
+                          style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                         ),
                       ),
                       Image.asset('assets/icon_orange_indicator.png', width: 20),
                       Text(
-                        '2018-10-10 15:15:15',
+                        qrCodeBean.expire,
                         maxLines: 1,
-                        style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
+                        style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                       ),
                       Padding(padding: EdgeInsets.only(right: 20)),
                     ],
@@ -93,7 +98,7 @@ class QrHistoryItem extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        VisitorQrCodePage.start(context);
+        VisitorQrCodePage.start(context, qrCodeBean);
       },
     );
   }

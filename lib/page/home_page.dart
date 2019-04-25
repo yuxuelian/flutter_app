@@ -51,11 +51,10 @@ class HomeState extends State<HomePage> {
   Future<void> _initUserStore() async {
     // 获取本地存储的用户信息
     final userBean = await PrefsUtil.getUserBean();
-    final loginState = userBean != null;
     // 修改内存中的UserBean
     BaseUserStore userStore = ScopedModel.of(context);
+    userStore.isLogin = userBean != null;
     userStore.userBean = userBean;
-    userStore.isLogin = loginState;
   }
 
   @override

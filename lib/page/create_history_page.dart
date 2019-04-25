@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
+import '../bean/index.dart';
+import '../http/request_method.dart';
 import '../main.dart';
+import '../store/user_store.dart';
 import '../utils/refresh_widget_build.dart';
 import '../widget/empty_widget.dart';
 import '../widget/qr_history_item.dart';
 
 class CreateHistoryPage extends StatefulWidget {
-  /// 跳转到设置页面
   static Future<T> start<T extends Object>(BuildContext context) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
@@ -23,34 +26,57 @@ class CreateHistoryPage extends StatefulWidget {
 }
 
 class CreateHistoryState extends State<CreateHistoryPage> {
-  List<String> historyList = [];
+  static final _limit = 10;
+
+  var qrCodeBeanList = <QrCodeBean>[];
+
+  var currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestData(false);
+  }
+
+  Future<void> _requestData(bool isAppend) async {
+    BaseUserStore userStore = ScopedModel.of(context);
+    final sceneId = userStore.selectedCommunity.id;
+    try {
+      final res = await RequestApi.queryQrCodeHistoryList(sceneId, currentPage * _limit, _limit);
+      if (isAppend) {
+        currentPage++;
+        // 追加
+        setState(() {
+          qrCodeBeanList.addAll(res.results);
+        });
+      } else {
+        currentPage = 0;
+        // 清空重新赋值
+        setState(() {
+          qrCodeBeanList = res.results;
+        });
+      }
+    } catch (error) {
+      // 加载失败
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final slivers = <Widget>[
       CupertinoSliverRefreshControl(
+        // 重新加载数据
         onRefresh: () {
-          print('开始下拉刷新');
-          return Future<void>.delayed(const Duration(seconds: 2)).then<void>((_) {
-            if (mounted) {
-              setState(() {
-                print('下拉刷新完成');
-              });
-            }
-          });
+          // 重新从第 0 页开始加载
+          return _requestData(false);
         },
         builder: buildRefreshWidget,
       ),
     ];
 
-    if (historyList.isNotEmpty) {
+    if (qrCodeBeanList.isNotEmpty) {
       slivers.add(SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return QrHistoryItem();
-          },
-          childCount: historyList.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) => QrHistoryItem(qrCodeBeanList[index]), childCount: qrCodeBeanList.length),
       ));
     } else {
       slivers.add(SliverToBoxAdapter(

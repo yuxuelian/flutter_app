@@ -1,37 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../bean/index.dart';
+import '../http/request_method.dart';
 import '../main.dart';
 import '../utils/refresh_widget_build.dart';
 import '../widget/empty_widget.dart';
 import '../widget/member_input_dialog.dart';
-import '../widget/state_button.dart';
 import '../widget/member_item.dart';
+import '../widget/state_button.dart';
 
 class ManageMemberPage extends StatefulWidget {
-  /// 跳转到设置页面
-  static Future<T> start<T extends Object>(BuildContext context) {
+  static Future<T> start<T extends Object>(BuildContext context, int type, String typeName, List<HouseMember> validHouseMember) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => ManageMemberPage(),
+        pageBuilder: (context, animation, secondaryAnimation) => ManageMemberPage(type, typeName, validHouseMember),
         transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
       ),
     );
   }
 
+  final int type;
+  final String typeName;
+
+  final List<HouseMember> validHouseMember;
+
+  ManageMemberPage(this.type, this.typeName, this.validHouseMember);
+
   @override
   State<StatefulWidget> createState() => ManageMemberState();
 }
 
 class ManageMemberState extends State<ManageMemberPage> {
-  List<String> memberList = [
-    '1',
-    '1',
-    '1',
-    '1',
-    '1',
-  ];
+  var memberList = <MemberBean>[];
+
+  // 用于标记是否正在加载  isLoading  = true  表示正在加载中  false 表示已经停止加载
+//  var isLoading = true;
 
   /// 显示二维码生成对话框
   void _showMemberInputDialog(BuildContext context) {
@@ -39,12 +44,35 @@ class ManageMemberState extends State<ManageMemberPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _requestData();
+  }
+
+  Future<void> _requestData() async {
+    var map = widget.validHouseMember.map((houseMember) {
+      return RequestApi.queryMemberList(houseMember.id, widget.type);
+    });
+    try {
+      final res = await Future.wait(map);
+      final temp = <MemberBean>[];
+      res.forEach((itemMemberList) {
+        temp.addAll(itemMemberList);
+      });
+      setState(() {
+        memberList = temp;
+      });
+    } catch (error) {
+      // 加载失败
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final slivers = <Widget>[
       CupertinoSliverRefreshControl(
-        onRefresh: () {
-          return Future.delayed(const Duration(seconds: 2));
-        },
+        // 触发下拉加载,重新请求一次数据
+        onRefresh: _requestData,
         builder: buildRefreshWidget,
       ),
     ];
@@ -52,15 +80,16 @@ class ManageMemberState extends State<ManageMemberPage> {
       slivers.add(SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
+            final memberBean = memberList[index];
             return MemberItem(
               () {
-                print("点击MemberItem");
+                print('memberBean = $memberBean');
               },
-              "王开波",
-              "15682070710",
-              "业主",
-              "1-1-1=1",
-              "2019-04-22 16:22:50",
+              memberBean.user.nickname,
+              memberBean.user.username,
+              memberBean.type_name,
+              memberBean.fullHouseName,
+              memberBean.expire,
             );
           },
           childCount: memberList.length,
@@ -75,7 +104,7 @@ class ManageMemberState extends State<ManageMemberPage> {
       backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('注册新成员', style: TextStyle(fontSize: 16, color: Colors.white)),
+        title: Text(widget.typeName, style: TextStyle(fontSize: 16, color: Colors.white)),
         centerTitle: true,
         elevation: 0,
       ),

@@ -3,21 +3,22 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../main.dart';
 import '../widget/logo2.dart';
+import '../bean/index.dart';
 
 class VisitorQrCodePage extends StatefulWidget {
-  static Future<T> start<T extends Object>(BuildContext context) {
+  static Future<T> start<T extends Object>(BuildContext context, QrCodeBean qrCodeBean) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => VisitorQrCodePage(),
+        pageBuilder: (context, animation, secondaryAnimation) => VisitorQrCodePage(qrCodeBean),
         transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
       ),
     );
   }
 
-  final Widget child;
+  final QrCodeBean qrCodeBean;
 
-  VisitorQrCodePage({Key key, this.child}) : super(key: key);
+  VisitorQrCodePage(this.qrCodeBean, {Key key}) : super(key: key);
 
   _VisitorQrCodePageState createState() => _VisitorQrCodePageState();
 }
@@ -59,7 +60,7 @@ class _VisitorQrCodePageState extends State<VisitorQrCodePage> {
                   child: Container(),
                 ),
                 QrImage(
-                  data: '123123',
+                  data: widget.qrCodeBean.qr_code,
                   onError: (ex) {
                     print('[QR] ERROR - $ex');
                   },
@@ -69,11 +70,11 @@ class _VisitorQrCodePageState extends State<VisitorQrCodePage> {
                   child: Container(),
                 ),
                 Text(
-                  '到访地址: 1栋->1单元->999号',
+                  '到访地址: ${widget.qrCodeBean.fullHouseName}',
                   style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                 ),
                 Text(
-                  '过期时间: 2019-03-26 10:57:39',
+                  '过期时间: ${widget.qrCodeBean.expire}',
                   style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
                 ),
                 Expanded(

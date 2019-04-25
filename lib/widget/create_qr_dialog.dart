@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'dart:convert';
 
 import '../bean/index.dart';
 import '../page/visitor_qr_code_page.dart';
 import '../store/user_store.dart';
+import '../widget/date_picker.dart';
 import 'custom_alert_dialog.dart';
 import 'logo.dart';
 
@@ -35,23 +37,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
                   Padding(
                     padding: EdgeInsets.only(left: 16),
                   ),
-                  Expanded(
-                    child: TextField(
-                      keyboardType: TextInputType.text,
-                      maxLength: 6,
-                      autofocus: false,
-                      cursorWidth: 1,
-                      decoration: InputDecoration(
-                        // 主要目的是隐藏Counter
-                        counter: Container(),
-                        hintText: '请输入姓名(非必填)',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(top: 10),
-                      ),
-                      style: TextStyle(fontSize: 16),
-                      scrollPadding: EdgeInsets.all(0),
-                    ),
-                  ),
+                  Text('请设置过期时间'),
                 ],
               ),
             ),
@@ -74,13 +60,17 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
               padding: EdgeInsets.only(left: 20),
               height: 40,
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   // 显示日期选择对话框
-                  DatePicker.showDatePicker(context, onConfirm: (year, month, date) {
-                    print(year);
-                    print(month);
-                    print(date);
-                  });
+                  await DatePicker.showDatePicker(
+                    context,
+                    DateTime.now(),
+                    DateTime.now(),
+                    DateTime.utc(2022, 3),
+                    (newDateTime) {
+                      print(newDateTime);
+                    },
+                  );
                 },
                 child: Row(
                   children: <Widget>[
@@ -127,7 +117,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
                             child: Container(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                value.fullName,
+                                value.fullHouseName,
                                 style: TextStyle(color: Color(0xFF303030)),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -179,8 +169,10 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
 
                           // TODO 关闭当前页面
                           Navigator.of(context).pop();
+                          var qrCodeBean = QrCodeBean.fromJson(json.decode(
+                              '{"house_no":"000999","name":"","gender":1,"house":{"id":"RvK7iKCo4Si","name":"1","type":1,"type_name":"楼栋","unit":"001"},"expire":"2019-04-23 00:03:28","phone":"","qr_code":"4rdT6jrmtPWU9WeZhvFynC","created_at":"2019-04-22 00:03:27","pass_limit":0}'));
                           // TODO 跳转到访客二维码显示二面
-                          VisitorQrCodePage.start(context);
+                          VisitorQrCodePage.start(context, qrCodeBean);
                         },
                       ),
                     ),

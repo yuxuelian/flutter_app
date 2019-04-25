@@ -149,7 +149,7 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
                                 child: Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    value.fullName,
+                                    value.fullHouseName,
                                     style: TextStyle(color: Color(0xFF303030)),
                                     overflow: TextOverflow.ellipsis,
                                   ),

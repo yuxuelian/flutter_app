@@ -158,7 +158,7 @@ class MenuItemState extends State<MenuItem> {
             ),
             ScopedModelDescendant<BaseUserStore>(builder: (context, child, userStore) {
               if (menuItemData.id == 0) {
-                return Text(userStore.userBean?.username ?? "---");
+                return Text(userStore.userBean?.username ?? '---');
               } else if (menuItemData.id == 1) {
                 return Text('1.0.0');
               }
