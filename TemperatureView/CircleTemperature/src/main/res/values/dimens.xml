@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="default_circle_radius">110dp</dimen>
-    <dimen name="default_line_length">20dp</dimen>
-    <dimen name="default_line_width">1dp</dimen>
-    <dimen name="default_padding">5dp</dimen>
-</resources>

@@ -67,7 +67,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
                 return GestureDetector(
                   onTap: () async {
                     final resIndex = await SinglePicker.showSinglePicker(context, _validateTypeList, (index) {});
-                    if (resIndex != -1) {
+                    if (resIndex != null) {
                       setState(() {
                         _selectValidateTypeIndex = resIndex;
                       });

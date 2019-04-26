@@ -118,7 +118,7 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
                       final houseMemberList = userStore.selectedCommunity.house_member;
                       final showStringList = houseMemberList.map<String>((value) => value.fullHouseName).toList();
                       final resIndex = await SinglePicker.showSinglePicker(context, showStringList, (index) {});
-                      if (resIndex != -1) {
+                      if (resIndex != null) {
                         setState(() {
                           _selectHouseMember = houseMemberList[resIndex];
                         });
