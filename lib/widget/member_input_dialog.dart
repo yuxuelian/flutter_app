@@ -3,8 +3,12 @@ import 'package:scoped_model/scoped_model.dart';
 
 import '../bean/index.dart';
 import '../store/user_store.dart';
+import '../widget/date_picker.dart';
+import '../widget/single_picker.dart';
 import 'custom_alert_dialog.dart';
 import 'logo.dart';
+
+const _validateTypeList = ['常住人员', '临时人员'];
 
 class MemberInputDialogWidget extends StatefulWidget {
   final Widget child;
@@ -15,8 +19,9 @@ class MemberInputDialogWidget extends StatefulWidget {
 }
 
 class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
-  String _dropDownValue1 = '长期有效';
-  HouseMember _dropDownValue2;
+  int _selectValidateTypeIndex;
+  HouseMember _selectHouseMember;
+  DateTime _selectDateTime;
 
   @override
   Widget build(BuildContext context) {
@@ -49,119 +54,87 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
               Container(
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
                 padding: EdgeInsets.only(left: 20),
-                child: Container(
-                  height: 40,
-                  child: Row(
-                    children: <Widget>[
-                      Image.asset('assets/icon_validate_time.png', width: 20),
-                      Padding(
-                        padding: EdgeInsets.only(left: 16),
-                      ),
-                      ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-                        return DropdownButton<String>(
-                          value: _dropDownValue1,
-                          elevation: 0,
-                          isDense: true,
-                          hint: SizedBox(
-                            width: 190,
-                            child: Text('选择有效期长短', style: TextStyle(color: Color(0xFF303030)), overflow: TextOverflow.ellipsis),
-                          ),
-                          onChanged: (String newValue) {
-                            setState(() {
-                              _dropDownValue1 = newValue;
-                            });
-                          },
-                          items: ['长期有效', '短期有效'].map<DropdownMenuItem<String>>((value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Container(
-                                width: 190,
-                                color: Colors.white,
-                                height: double.infinity,
-                                child: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    value,
-                                    style: TextStyle(color: Color(0xFF303030)),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
-                padding: EdgeInsets.only(left: 20),
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 40,
+                height: 40,
+                child: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                  return GestureDetector(
+                    onTap: () async {
+                      final resIndex = await SinglePicker.showSinglePicker(context, _validateTypeList, (index) {});
+                      if (resIndex != null) {
+                        setState(() {
+                          _selectValidateTypeIndex = resIndex;
+                        });
+                      }
+                    },
                     child: Row(
                       children: <Widget>[
-                        Image.asset('assets/icon_validate.png', width: 20),
+                        Image.asset('assets/icon_validate_time.png', width: 20),
                         Padding(
                           padding: EdgeInsets.only(left: 16),
                         ),
-                        Text('请设置过期时间'),
+                        Text(_selectValidateTypeIndex == null ? '请选择过期类型' : _validateTypeList[_selectValidateTypeIndex], style: TextStyle(color: Color(0xFF303030))),
                       ],
                     ),
+                  );
+                }),
+              ),
+              Container(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
+                padding: EdgeInsets.only(left: 20),
+                height: 40,
+                child: GestureDetector(
+                  onTap: () async {
+                    // 显示日期选择对话框
+                    final resDateTime = await DatePicker.showDatePicker(
+                      context,
+                      DateTime.now(),
+                      DateTime.now(),
+                      DateTime.utc(2030, 10, 1),
+                      (selectDateTime) {},
+                    );
+                    if (resDateTime != null) {
+                      setState(() {
+                        _selectDateTime = resDateTime;
+                      });
+                    }
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Image.asset('assets/icon_validate.png', width: 20),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
+                      ),
+                      Text(_selectDateTime == null ? '请设置过期时间' : _selectDateTime.toString().split('.')[0]),
+                    ],
                   ),
                 ),
               ),
               Container(
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
                 padding: EdgeInsets.only(left: 20),
-                child: Container(
-                  height: 40,
-                  child: Row(
-                    children: <Widget>[
-                      Image.asset('assets/icon_house.png', width: 20),
-                      Padding(
-                        padding: EdgeInsets.only(left: 16),
-                      ),
-                      ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-                        return DropdownButton<HouseMember>(
-                          value: _dropDownValue2,
-                          elevation: 0,
-                          isDense: true,
-                          hint: SizedBox(
-                            width: 190,
-                            child: Text('请选择房屋', style: TextStyle(color: Color(0xFF303030)), overflow: TextOverflow.ellipsis),
-                          ),
-                          onChanged: (HouseMember newValue) {
-                            setState(() {
-                              _dropDownValue2 = newValue;
-                            });
-                          },
-                          items: userStore.selectedCommunity.house_member.map<DropdownMenuItem<HouseMember>>((value) {
-                            return DropdownMenuItem<HouseMember>(
-                              value: value,
-                              child: Container(
-                                width: 190,
-                                color: Colors.white,
-                                height: double.infinity,
-                                child: Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    value.fullHouseName,
-                                    style: TextStyle(color: Color(0xFF303030)),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
+                height: 40,
+                child: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                  return GestureDetector(
+                    onTap: () async {
+                      final houseMemberList = userStore.selectedCommunity.house_member;
+                      final showStringList = houseMemberList.map<String>((value) => value.fullHouseName).toList();
+                      final resIndex = await SinglePicker.showSinglePicker(context, showStringList, (index) {});
+                      if (resIndex != -1) {
+                        setState(() {
+                          _selectHouseMember = houseMemberList[resIndex];
+                        });
+                      }
+                    },
+                    child: Row(
+                      children: <Widget>[
+                        Image.asset('assets/icon_house.png', width: 20),
+                        Padding(
+                          padding: EdgeInsets.only(left: 16),
+                        ),
+                        Text(_selectHouseMember == null ? '请选择房屋' : _selectHouseMember.fullHouseName, style: TextStyle(color: Color(0xFF303030))),
+                      ],
+                    ),
+                  );
+                }),
               ),
               Container(
                 height: 40,

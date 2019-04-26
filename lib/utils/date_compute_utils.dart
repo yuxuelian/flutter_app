@@ -10,6 +10,10 @@ class StringEntity {
   }
 }
 
+const _29 = StringEntity(29, '29日');
+const _30 = StringEntity(30, '30日');
+const _31 = StringEntity(31, '31日');
+
 const List<StringEntity> monthList = [
   StringEntity(1, '01月'),
   StringEntity(2, '02月'),
@@ -54,13 +58,12 @@ const List<StringEntity> dayList = [
   StringEntity(26, '26日'),
   StringEntity(27, '27日'),
   StringEntity(28, '28日'),
-  StringEntity(29, '29日'),
-  StringEntity(30, '30日'),
-  StringEntity(31, '31日'),
+  _29,
+  _30,
+  _31,
 ];
 
 List<StringEntity> computeYear(DateTime min, DateTime max) {
-  assert(min.millisecondsSinceEpoch <= max.millisecondsSinceEpoch);
   final res = <StringEntity>[];
   for (int i = min.year; i <= max.year; i++) {
     res.add(StringEntity(i, '$i年'));
@@ -69,8 +72,6 @@ List<StringEntity> computeYear(DateTime min, DateTime max) {
 }
 
 List<StringEntity> computeMonth(DateTime min, DateTime max, int currentYear) {
-  assert(min.year <= currentYear);
-  assert(currentYear <= max.year);
   final minYear = min.year;
   final maxYear = max.year;
   List<StringEntity> res;
@@ -81,11 +82,81 @@ List<StringEntity> computeMonth(DateTime min, DateTime max, int currentYear) {
   } else if (currentYear == maxYear) {
     res = monthList.sublist(0, max.month);
   } else {
-    res = <StringEntity>[]..addAll(monthList);
+    res = monthList;
   }
   return res;
 }
 
 List<StringEntity> computeDay(DateTime min, DateTime max, int currentYear, int currentMonth) {
-  return dayList;
+  final minYear = min.year;
+  final maxYear = max.year;
+  final minMonth = min.month;
+  final maxMonth = max.month;
+  List<StringEntity> res;
+  if (currentYear == minYear && currentYear == maxYear) {
+    if (currentMonth == minMonth && currentMonth == maxMonth) {
+      // 最大最小都在同一年的同一个月中
+      res = dayList.sublist(min.day - 1, max.day);
+    } else if (currentMonth == minMonth) {
+      // 第一年的第一月
+      res = dayList.sublist(min.day - 1);
+    } else if (currentMonth == maxMonth) {
+      // 第一年的最后一月
+      res = dayList.sublist(0, max.day);
+    } else {
+      res = dayList;
+    }
+  } else if (currentYear == minYear) {
+    if (currentMonth == minMonth) {
+      // 第一年的第一个月
+      res = dayList.sublist(min.day - 1);
+    } else {
+      res = dayList;
+    }
+  } else if (currentYear == maxYear) {
+    if (currentMonth == maxMonth) {
+      // 最后一年的最后一个月
+      res = dayList.sublist(0, max.day);
+    } else {
+      res = dayList;
+    }
+  } else {
+    res = dayList;
+  }
+  return _checkDayList(res, currentYear, currentMonth);
+}
+
+bool _isLeapYear(int year) {
+  if (year % 100 == 0) {
+    return year % 400 == 0;
+  } else {
+    return year % 4 == 0;
+  }
+}
+
+List<StringEntity> _checkDayList(List<StringEntity> dayList, int currentYear, int currentMonth) {
+  var index = -1;
+  switch (currentMonth) {
+    case 2:
+      if (_isLeapYear(currentYear)) {
+        // 是闰年的情况,就去找是否有 30
+        index = dayList.indexOf(_30);
+      } else {
+        // 不是闰年的情况,就去找是否有 29
+        index = dayList.indexOf(_29);
+      }
+      break;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+      // 是否有 31
+      index = dayList.indexOf(_31);
+      break;
+  }
+  if (index != -1) {
+    return dayList.sublist(0, index);
+  } else {
+    return dayList;
+  }
 }

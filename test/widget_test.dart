@@ -16,5 +16,5 @@ void main() async {
 //    print(demoTest.toString());
 //  });
 
-  print(DateTime.now().millisecondsSinceEpoch);
+  print(DateTime.now().toString().split('.')[0]);
 }

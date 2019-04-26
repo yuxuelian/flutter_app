@@ -13,11 +13,9 @@ class DatePicker extends StatefulWidget {
     DateTime maximumDate,
     ValueChanged<DateTime> onDateTimeChanged,
   ) {
-    assert(minimumDate.millisecondsSinceEpoch <= initialDateTime.millisecondsSinceEpoch);
-    assert(initialDateTime.millisecondsSinceEpoch <= maximumDate.millisecondsSinceEpoch);
     return showCupertinoModalPopup(
       context: context,
-      builder: (context) => DatePicker(
+      builder: (context) => DatePicker._(
             initialDateTime,
             minimumDate,
             maximumDate,
@@ -31,7 +29,8 @@ class DatePicker extends StatefulWidget {
   final DateTime maximumDate;
   final ValueChanged<DateTime> onDateTimeChanged;
 
-  DatePicker(this.initialDateTime, this.minimumDate, this.maximumDate, this.onDateTimeChanged, {Key key}) : super(key: key);
+  // 私有构造器,不允许外部通过构造器调用,只能通过 showDatePicker 静态方法显示
+  DatePicker._(this.initialDateTime, this.minimumDate, this.maximumDate, this.onDateTimeChanged, {Key key}) : super(key: key);
 
   @override
   State createState() => _DatePickerState();
@@ -85,46 +84,57 @@ class _DatePickerState extends State<DatePicker> {
     _dayScrollController = FixedExtentScrollController(initialItem: _daySelectedIndex);
   }
 
-  Widget _buildBaseContainer(BuildContext context, Row row) {
+  DateTime _computeDateTime() {
+    final year = _yearSelected.key;
+    final month = _monthSelected.key;
+    final day = _daySelected.key;
+    final nowDateTime = DateTime.now();
+    return DateTime.utc(
+      year,
+      month,
+      day,
+      nowDateTime.hour,
+      nowDateTime.minute,
+      nowDateTime.second,
+      nowDateTime.millisecond,
+      nowDateTime.microsecond,
+    );
+  }
+
+  Widget _buildBaseContainer(BuildContext context, Widget content) {
     return Container(
       height: _kPickerSheetHeight,
       color: CupertinoColors.white,
-      child: DefaultTextStyle(
-        style: const TextStyle(
-          color: CupertinoColors.black,
-          fontSize: 18.0,
-        ),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                CupertinoButton(
-                  minSize: 30,
-                  padding: EdgeInsets.fromLTRB(14, 10, 14, 10),
-                  child: Text("取消"),
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
-                ),
-                CupertinoButton(
-                  minSize: 30,
-                  padding: EdgeInsets.fromLTRB(14, 10, 14, 10),
-                  child: Text("确定"),
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
-                ),
-              ],
-            ),
-            // 分割线
-            Container(
-              height: 0.5,
-              color: CupertinoColors.black,
-            ),
-            Expanded(child: row),
-          ],
-        ),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              CupertinoButton(
+                minSize: 30,
+                padding: EdgeInsets.fromLTRB(14, 10, 14, 10),
+                child: Text("取消"),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+              ),
+              CupertinoButton(
+                minSize: 30,
+                padding: EdgeInsets.fromLTRB(14, 10, 14, 10),
+                child: Text("确定"),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop(_computeDateTime());
+                },
+              ),
+            ],
+          ),
+          // 分割线
+          Container(
+            height: 0.5,
+            color: CupertinoColors.black,
+          ),
+          Expanded(child: content),
+        ],
       ),
     );
   }
@@ -139,33 +149,27 @@ class _DatePickerState extends State<DatePicker> {
             itemExtent: _kPickerItemHeight,
             backgroundColor: CupertinoColors.white,
             onSelectedItemChanged: (index) {
-              // 记录选中的年
-              _yearSelected = _yearStringList[index];
               setState(() {
-                // 计算月的合法性
-                final tempMonthStringList = computeMonth(widget.minimumDate, widget.maximumDate, _yearStringList[index].key);
-                // 赋值  重新加载数据
+                _yearSelected = _yearStringList[index];
+                // 重新计算月
+                final tempMonthStringList = computeMonth(widget.minimumDate, widget.maximumDate, _yearSelected.key);
                 _monthStringList = tempMonthStringList;
-                // 移动到 0 位置
+                _monthSelected = _monthStringList[0];
                 _monthScrollController.jumpToItem(0);
 
-                print(_yearSelected);
-                print(_monthSelected);
+                // 重新计算日
+                final tempDayStringList = computeDay(widget.minimumDate, widget.maximumDate, _yearSelected.key, _monthSelected.key);
+                _dayStringList = tempDayStringList;
+                _daySelected = _dayStringList[0];
+                _dayScrollController.jumpToItem(0);
 
-//                print("tempMonthStringList.length = ${tempMonthStringList.length}");
-//                // 获取上一次选中的月份的位置
-//                var lastIndex = tempMonthStringList.indexOf(_monthSelected);
-//                // 未查找到(会返回 -1)
-//                if (lastIndex != -1) {
-//                  _monthScrollController.jumpToItem(lastIndex);
-//                } else {
-//                  _monthScrollController.jumpToItem(0);
-//                }
+                // 选择的日期更新回调
+                widget.onDateTimeChanged(_computeDateTime());
               });
             },
             children: List<Widget>.generate(_yearStringList.length, (index) {
               return Center(
-                child: Text(_yearStringList[index].value),
+                child: Text(_yearStringList[index].value, style: TextStyle(fontSize: 18, color: CupertinoColors.black)),
               );
             }),
           ),
@@ -177,16 +181,21 @@ class _DatePickerState extends State<DatePicker> {
             itemExtent: _kPickerItemHeight,
             backgroundColor: CupertinoColors.white,
             onSelectedItemChanged: (index) {
-              print("_monthScrollController----index = $index----");
-              // 记录一下本次选中的实体
-              _monthSelected = _monthStringList[index];
               setState(() {
-                // 需要更新 天 显示
+                _monthSelected = _monthStringList[index];
+                // 重新计算日
+                final tempDayStringList = computeDay(widget.minimumDate, widget.maximumDate, _yearSelected.key, _monthSelected.key);
+                _dayStringList = tempDayStringList;
+                _daySelected = _dayStringList[0];
+                _dayScrollController.jumpToItem(0);
+
+                // 选择的日期更新回调
+                widget.onDateTimeChanged(_computeDateTime());
               });
             },
             children: List<Widget>.generate(_monthStringList.length, (int index) {
               return Center(
-                child: Text(_monthStringList[index].value),
+                child: Text(_monthStringList[index].value, style: TextStyle(fontSize: 18, color: CupertinoColors.black)),
               );
             }),
           ),
@@ -198,15 +207,16 @@ class _DatePickerState extends State<DatePicker> {
             itemExtent: _kPickerItemHeight,
             backgroundColor: CupertinoColors.white,
             onSelectedItemChanged: (index) {
-              // 记录一下本次选中的实体
-              _daySelected = _dayStringList[index];
               setState(() {
-                // 更新状态
+                _daySelected = _dayStringList[index];
+
+                // 选择的日期更新回调
+                widget.onDateTimeChanged(_computeDateTime());
               });
             },
             children: List<Widget>.generate(_dayStringList.length, (int index) {
               return Center(
-                child: Text(_dayStringList[index].value),
+                child: Text(_dayStringList[index].value, style: TextStyle(fontSize: 18, color: CupertinoColors.black)),
               );
             }),
           ),

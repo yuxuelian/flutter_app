@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../bean/index.dart';
 import '../page/visitor_qr_code_page.dart';
 import '../store/user_store.dart';
-import '../widget/date_picker.dart';
+import '../widget/single_picker.dart';
 import 'custom_alert_dialog.dart';
 import 'logo.dart';
+
+const _validateTypeList = ['一天一次有效', '连续三天有效'];
 
 class CreateQrDialogWidget extends StatefulWidget {
   @override
@@ -16,7 +19,8 @@ class CreateQrDialogWidget extends StatefulWidget {
 }
 
 class _CreateQrDialogState extends State<CreateQrDialogWidget> {
-  HouseMember _dropDownValue;
+  HouseMember _selectHouseMember;
+  int _selectValidateTypeIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -59,76 +63,55 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
               decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
               padding: EdgeInsets.only(left: 20),
               height: 40,
-              child: GestureDetector(
-                onTap: () async {
-                  // 显示日期选择对话框
-                  await DatePicker.showDatePicker(
-                    context,
-                    DateTime.now(),
-                    DateTime.now(),
-                    DateTime.utc(2022, 3),
-                    (newDateTime) {
-                      print(newDateTime);
-                    },
-                  );
-                },
-                child: Row(
-                  children: <Widget>[
-                    Image.asset('assets/icon_validate_time.png', width: 20),
-                    Padding(
-                      padding: EdgeInsets.only(left: 16),
-                    ),
-                    Text('请设置过期时间'),
-                  ],
-                ),
-              ),
+              child: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                return GestureDetector(
+                  onTap: () async {
+                    final resIndex = await SinglePicker.showSinglePicker(context, _validateTypeList, (index) {});
+                    if (resIndex != -1) {
+                      setState(() {
+                        _selectValidateTypeIndex = resIndex;
+                      });
+                    }
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Image.asset('assets/icon_validate_time.png', width: 20),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
+                      ),
+                      Text(_selectValidateTypeIndex == null ? '请选择过期类型' : _validateTypeList[_selectValidateTypeIndex], style: TextStyle(color: Color(0xFF303030))),
+                    ],
+                  ),
+                );
+              }),
             ),
             Container(
               decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFD0D0D0)))),
               padding: EdgeInsets.only(left: 20),
               height: 40,
-              child: Row(
-                children: <Widget>[
-                  Image.asset('assets/icon_house.png', width: 20),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16),
-                  ),
-                  ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-                    return DropdownButton<HouseMember>(
-                      value: _dropDownValue,
-                      elevation: 0,
-                      isDense: true,
-                      hint: SizedBox(
-                        width: 190,
-                        child: Text('请选择房屋', style: TextStyle(color: Color(0xFF303030)), overflow: TextOverflow.ellipsis),
+              child: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                return GestureDetector(
+                  onTap: () async {
+                    final houseMemberList = userStore.selectedCommunity.house_member;
+                    final showStringList = houseMemberList.map<String>((value) => value.fullHouseName).toList();
+                    final resIndex = await SinglePicker.showSinglePicker(context, showStringList, (index) {});
+                    if (resIndex != -1) {
+                      setState(() {
+                        _selectHouseMember = houseMemberList[resIndex];
+                      });
+                    }
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Image.asset('assets/icon_house.png', width: 20),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
                       ),
-                      onChanged: (HouseMember newValue) {
-                        setState(() {
-                          _dropDownValue = newValue;
-                        });
-                      },
-                      items: userStore.selectedCommunity.house_member.map<DropdownMenuItem<HouseMember>>((value) {
-                        return DropdownMenuItem<HouseMember>(
-                          value: value,
-                          child: Container(
-                            width: 190,
-                            color: Colors.white,
-                            height: double.infinity,
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                value.fullHouseName,
-                                style: TextStyle(color: Color(0xFF303030)),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }),
-                ],
-              ),
+                      Text(_selectHouseMember == null ? '请选择房屋' : _selectHouseMember.fullHouseName, style: TextStyle(color: Color(0xFF303030))),
+                    ],
+                  ),
+                );
+              }),
             ),
             Container(
               height: 40,
