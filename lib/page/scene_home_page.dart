@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provide/provide.dart';
 import 'package:scan_access/main.dart';
 import 'package:scan_access/widget/include.dart';
-import 'package:scoped_model/scoped_model.dart';
-
 import '../bean/index.dart';
 import '../store/user_store.dart';
 import 'create_history_page.dart';
@@ -75,7 +74,7 @@ class SceneHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BaseUserStore userStore = ScopedModel.of(context);
+    final userStore = Provide.value<BaseUserStore>(context);
     return Scaffold(
       backgroundColor: Color(0xFFF0F0F0),
       resizeToAvoidBottomInset: false,

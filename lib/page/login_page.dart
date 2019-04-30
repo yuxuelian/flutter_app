@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:scan_access/http/request_method.dart';
-import 'package:scan_access/main.dart';
-import 'package:scan_access/store/user_store.dart';
-import 'package:scan_access/widget/state_button.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../bean/index.dart';
-import '../prefs/prefs_util.dart';
+import '../http/request_method.dart';
+import '../main.dart';
+import '../store/user_store.dart';
 import '../utils/form_check.dart';
+import '../utils/prefs_util.dart';
+import '../widget/state_button.dart';
 import 'web_view_page.dart';
 
 /// 未登录显示的页面
@@ -22,8 +23,8 @@ class LoginPage extends StatefulWidget {
         pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) => MyApp.createTransition(animation, child),
         transitionDuration: Duration(milliseconds: 400),
-        ),
-      );
+      ),
+    );
   }
 
   const LoginPage({Key key}) : super(key: key);
@@ -88,7 +89,7 @@ class LoginPageState extends State<LoginPage> {
       qrCodeBtnEnable = false;
       qrCodeBtnText = '${currentDownNum}s重新获取';
     });
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       currentDownNum--;
       if (currentDownNum <= 0) {
         clearCounterDown();
@@ -143,7 +144,7 @@ class LoginPageState extends State<LoginPage> {
       loginResultBean = RequestApi.smsLogin(phone, authCode);
     }
     loginResultBean.then((res) {
-      BaseUserStore userStore = ScopedModel.of(context);
+      final userStore = Provide.value<BaseUserStore>(context);
       // 修改全局变量
       userStore.isLogin = true;
       userStore.userBean = res.user;
@@ -179,54 +180,56 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-//    MediaQueryData mediaQueryData = MediaQuery.of(context);
-//    print(mediaQueryData.padding.left);
-//    print(mediaQueryData.padding.top);
-//    print(mediaQueryData.padding.right);
-//    print(mediaQueryData.padding.bottom);
-//    print(mediaQueryData.devicePixelRatio);
-//    print(mediaQueryData.size.width);
-//    print(mediaQueryData.size.height);
     // 手机号输入行
     var phoneInputWidget = <Widget>[
       Expanded(
-        child: TextField(
-          controller: phoneEditController,
-          keyboardType: TextInputType.phone,
-          maxLength: 11,
-          autofocus: false,
-          decoration: InputDecoration(
-            // 主要目的是隐藏Counter
-            counter: Container(),
-              icon: Image.asset('assets/login_user.png', width: 26),
-              hintText: '请输入手机号',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10),
-            ),
-          style: TextStyle(fontSize: 16),
-          onChanged: (value) {
-            phone = value;
-            if (isPhoneValid(phone)) {
-              if (!isCounting) {
-                setState(() {
-                  qrCodeBtnEnable = true;
-                });
-              }
+        child: Container(
+          padding: EdgeInsets.only(left: 10),
+          height: 40,
+          child: Row(
+            children: <Widget>[
+              Image.asset('assets/login_user.png', width: 26),
+              Padding(
+                padding: EdgeInsets.only(left: 10),
+              ),
+              Expanded(
+                child: CupertinoTextField(
+                  maxLines: 1,
+                  padding: EdgeInsets.all(0),
+                  style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
+                  decoration: BoxDecoration(border: Border()),
+                  placeholder: '请输入手机号',
+                  controller: phoneEditController,
+                  keyboardType: TextInputType.phone,
+                  maxLength: 11,
+                  autofocus: false,
+                  onChanged: (value) {
+                    phone = value;
+                    if (isPhoneValid(phone)) {
+                      if (!isCounting) {
+                        setState(() {
+                          qrCodeBtnEnable = true;
+                        });
+                      }
 
-              if (isAuthCodeValid(authCode)) {
-                setState(() {
-                  isEnableLogin = true;
-                });
-              }
-            } else {
-              setState(() {
-                isEnableLogin = false;
-                qrCodeBtnEnable = false;
-              });
-            }
-          },
+                      if (isAuthCodeValid(authCode)) {
+                        setState(() {
+                          isEnableLogin = true;
+                        });
+                      }
+                    } else {
+                      setState(() {
+                        isEnableLogin = false;
+                        qrCodeBtnEnable = false;
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        )
+        ),
+      ),
     ];
 
     // 如果是短信登录  则显示获取验证码按钮
@@ -237,16 +240,16 @@ class LoginPageState extends State<LoginPage> {
           stateEnabled: BoxDecoration(
             border: Border.all(color: Color(0xFF606060)),
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
+          ),
           statePressed: BoxDecoration(
             border: Border.all(color: Color(0xFF606060)),
             borderRadius: BorderRadius.all(Radius.circular(20)),
             color: Color(0x30909090),
-            ),
+          ),
           stateDisable: BoxDecoration(
             border: Border.all(color: Color(0xFFD0D0D0)),
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
+          ),
           onTap: () {
             getAuthCode();
           },
@@ -255,48 +258,58 @@ class LoginPageState extends State<LoginPage> {
             width: 100,
             child: Center(
               child: Text(qrCodeBtnText, style: TextStyle(fontSize: 12, color: Color(qrCodeBtnEnable ? 0xFF606060 : 0xFFD0D0D0))),
-              ),
             ),
           ),
-        );
+        ),
+      );
     }
 
     // 密码输入行
     var pwdInputWidget = <Widget>[
       Expanded(
-        child: TextField(
-          controller: pwdEditController,
-          keyboardType: isPwdLoginMode ? TextInputType.text : TextInputType.number,
-          maxLength: isPwdLoginMode ? 20 : 6,
-          autofocus: false,
-          obscureText: isShowPwd,
-          decoration: InputDecoration(
-            // 主要目的是隐藏Counter
-            counter: Container(),
-              icon: Image.asset(isPwdLoginMode ? 'assets/login_password.png' : 'assets/login_auth_code.png', width: 26),
-              hintText: isPwdLoginMode ? '请输入8-20位密码' : '请输入6位验证码',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10),
-            ),
-          style: TextStyle(fontSize: 16),
-          onChanged: (value) {
-            authCode = value;
-            // 验证码有效
-            if (isAuthCodeValid(authCode)) {
-              // 密码有效
-              if (isPhoneValid(phone)) {
-                setState(() {
-                  isEnableLogin = true;
-                });
-              }
-            } else {
-              setState(() {
-                isEnableLogin = false;
-              });
-            }
-          },
+        child: Container(
+          padding: EdgeInsets.only(left: 10),
+          height: 40,
+          child: Row(
+            children: <Widget>[
+              Image.asset(isPwdLoginMode ? 'assets/login_password.png' : 'assets/login_auth_code.png', width: 26),
+              Padding(
+                padding: EdgeInsets.only(left: 10),
+              ),
+              Expanded(
+                child: CupertinoTextField(
+                  maxLines: 1,
+                  autofocus: false,
+                  padding: EdgeInsets.all(0),
+                  style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
+                  decoration: BoxDecoration(border: Border()),
+                  obscureText: isShowPwd,
+                  controller: pwdEditController,
+                  keyboardType: isPwdLoginMode ? TextInputType.text : TextInputType.number,
+                  maxLength: isPwdLoginMode ? 20 : 6,
+                  placeholder: isPwdLoginMode ? '请输入8-20位密码' : '请输入6位验证码',
+                  onChanged: (value) {
+                    authCode = value;
+                    // 验证码有效
+                    if (isAuthCodeValid(authCode)) {
+                      // 密码有效
+                      if (isPhoneValid(phone)) {
+                        setState(() {
+                          isEnableLogin = true;
+                        });
+                      }
+                    } else {
+                      setState(() {
+                        isEnableLogin = false;
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
+      ),
     ];
 
     // 如果是密码登录  就显示密码查看按钮
@@ -304,7 +317,7 @@ class LoginPageState extends State<LoginPage> {
       pwdInputWidget.add(GestureDetector(
         onTap: _changeShowPwd,
         child: Container(height: 30, width: 30, child: Image.asset(isShowPwd ? 'assets/mimabukejian.png' : 'assets/mimakejian.png', width: 30)),
-        ));
+      ));
     }
 
     return Scaffold(
@@ -314,53 +327,53 @@ class LoginPageState extends State<LoginPage> {
         title: Text('登录', style: TextStyle(fontSize: 16, color: Colors.white)),
         elevation: 0,
         centerTitle: true,
-        ),
+      ),
       body: ListView(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(top: 30),
-            ),
+          ),
           // logo
           Center(
             child: Image.asset('assets/login_logo.png', width: 180),
-            ),
+          ),
           Padding(
             padding: EdgeInsets.only(top: 30),
-            ),
+          ),
           // 第一行手机号码输入布局
           Container(
             decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
             margin: EdgeInsets.only(left: 20, right: 20),
             child: Row(children: phoneInputWidget),
-            ),
+          ),
           Padding(
             padding: EdgeInsets.only(top: 10),
-            ),
+          ),
           // 第二行验证码输入
           Container(
             decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
             margin: EdgeInsets.only(left: 20, right: 20),
             child: Row(children: pwdInputWidget),
-            ),
+          ),
           // 切换登录模式
-//          Row(
-//            mainAxisAlignment: MainAxisAlignment.end,
-//            children: <Widget>[
-//              FlatButton(
-//                color: Colors.transparent,
-//                highlightColor: Colors.transparent,
-//                // 点击按钮的时候切换
-//                onPressed: _changeLoginMode,
-//                child: Text(isPwdLoginMode ? '使用短信登录' : '使用密码登录'),
-//              ),
-//              Padding(
-//                padding: EdgeInsets.only(right: 20),
-//              ),
-//            ],
-//          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              FlatButton(
+                color: Colors.transparent,
+                highlightColor: Colors.transparent,
+                // 点击按钮的时候切换
+                onPressed: _changeLoginMode,
+                child: Text(isPwdLoginMode ? '使用短信登录' : '使用密码登录'),
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 20),
+              ),
+            ],
+          ),
           Padding(
-            padding: EdgeInsets.only(top: 50),
-            ),
+            padding: EdgeInsets.only(top: 30),
+          ),
           Center(
             child: StateButtonWidget(
               child: Container(
@@ -370,61 +383,61 @@ class LoginPageState extends State<LoginPage> {
                   child: Text(
                     '登录',
                     style: TextStyle(color: Colors.white),
-                    ),
                   ),
                 ),
+              ),
               isEnable: isEnableLogin,
               onTap: login,
               stateEnabled: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(7)),
                 gradient: LinearGradient(colors: <Color>[Color(0xFF05A8F1), Color(0xFF25EAA6)]),
-                ),
+              ),
               stateDisable: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(7)),
                 gradient: LinearGradient(colors: <Color>[Color(0xFF666666), Color(0xFFBBBBBB)]),
-                ),
+              ),
               statePressed: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(7)),
                 gradient: LinearGradient(colors: <Color>[Color(0xFF0558F1), Color(0xFF00D080)]),
-                ),
               ),
             ),
+          ),
           Padding(
             padding: EdgeInsets.only(top: 20),
-            ),
+          ),
           Row(
             children: <Widget>[
               Expanded(
                 child: Container(),
-                ),
+              ),
               Text(
                 '使用即表示同意',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF606060),
-                  ),
                 ),
+              ),
               StateButtonWidget(
                 child: Text(
                   '《用户协议》',
                   style: TextStyle(
                     fontSize: 14,
                     color: Color(0xFF2196F3),
-                    ),
                   ),
+                ),
                 onTap: () {
                   WebViewPage.start(context, '用户协议', 'https://api.yishi-ai.com/static/html/license.html').then((res) {
                     print(res);
                   });
                 },
-                ),
+              ),
               Expanded(
                 child: Container(),
-                ),
+              ),
             ],
-            )
+          )
         ],
-        ),
-      );
+      ),
+    );
   }
 }

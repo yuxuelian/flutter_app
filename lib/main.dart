@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provide/provide.dart';
 import 'package:scan_access/page/home_page.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 import 'store/user_store.dart';
-import 'dart:io';
 
-void main() => runApp(MyApp());
+void main() {
+  final providers = Providers();
+  providers.provide(Provider<BaseUserStore>.value(userStore));
+  runApp(ProviderNode(
+    child: MyApp(),
+    providers: providers,
+  ));
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -25,17 +31,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    print('Platform.isAndroid = ${Platform.isAndroid}');
-    return ScopedModel<BaseUserStore>(
-      model: BaseUserStore.instance,
-      child: MaterialApp(
-        theme: ThemeData(
-          platform: TargetPlatform.iOS,
-          primarySwatch: Colors.blue,
-          canvasColor: Colors.transparent,
-        ),
-        home: HomePage(),
+    return MaterialApp(
+      theme: ThemeData(
+        platform: TargetPlatform.iOS,
+        primarySwatch: Colors.blue,
+        canvasColor: Colors.transparent,
       ),
+      home: HomePage(),
     );
   }
 }

@@ -3,7 +3,6 @@ import 'dart:convert' show json;
 import 'house_member.dart';
 
 class Community {
-
   int type;
   String address;
   String id;

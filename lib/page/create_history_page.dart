@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../bean/index.dart';
 import '../http/request_method.dart';
@@ -9,6 +9,8 @@ import '../store/user_store.dart';
 import '../utils/refresh_widget_build.dart';
 import '../widget/empty_widget.dart';
 import '../widget/qr_history_item.dart';
+
+const _LIMIT = 10;
 
 class CreateHistoryPage extends StatefulWidget {
   static Future<T> start<T extends Object>(BuildContext context) {
@@ -26,8 +28,6 @@ class CreateHistoryPage extends StatefulWidget {
 }
 
 class CreateHistoryState extends State<CreateHistoryPage> {
-  static final _limit = 10;
-
   var qrCodeBeanList = <QrCodeBean>[];
 
   var currentPage = 0;
@@ -39,10 +39,12 @@ class CreateHistoryState extends State<CreateHistoryPage> {
   }
 
   Future<void> _requestData(bool isAppend) async {
-    BaseUserStore userStore = ScopedModel.of(context);
+    // 延时一下
+    await Future.delayed(const Duration(milliseconds: 500));
+    final userStore = Provide.value<BaseUserStore>(context);
     final sceneId = userStore.selectedCommunity.id;
     try {
-      final res = await RequestApi.queryQrCodeHistoryList(sceneId, currentPage * _limit, _limit);
+      final res = await RequestApi.queryQrCodeHistoryList(sceneId, currentPage * _LIMIT, _LIMIT);
       if (isAppend) {
         currentPage++;
         // 追加
@@ -58,6 +60,7 @@ class CreateHistoryState extends State<CreateHistoryPage> {
       }
     } catch (error) {
       // 加载失败
+      print(error);
     }
   }
 

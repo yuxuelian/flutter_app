@@ -1,10 +1,10 @@
-import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter/foundation.dart';
 
 import '../bean/index.dart';
 
-abstract class BaseUserStore extends Model {
-  static final instance = _UserStore();
+final userStore = _UserStore();
 
+abstract class BaseUserStore with ChangeNotifier {
   bool get isLogin;
 
   set isLogin(bool isLogin);

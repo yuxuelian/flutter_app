@@ -1,22 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:scan_access/store/user_store.dart';
-import 'package:scan_access/widget/community_item.dart';
-import 'package:scan_access/widget/state_button.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../../bean/index.dart';
 import '../../http/request_method.dart';
-import '../../prefs/prefs_util.dart';
 import '../../store/user_store.dart';
+import '../../utils/prefs_util.dart';
 import '../../utils/refresh_widget_build.dart';
-import '../settings_page.dart';
+import '../../widget/community_item.dart';
 import '../../widget/pic_selection.dart';
+import '../../widget/state_button.dart';
+import '../settings_page.dart';
 
 // 已登录显示的页面
 class MineWidget extends StatefulWidget {
@@ -25,8 +27,6 @@ class MineWidget extends StatefulWidget {
 }
 
 class MineState extends State<MineWidget> {
-  File _avatarFile;
-
   Future<File> _onImageButtonPressed(ImageSource source) {
     return ImagePicker.pickImage(source: source);
   }
@@ -76,30 +76,22 @@ class MineState extends State<MineWidget> {
   }
 
   Future<void> _requestData() async {
-    BaseUserStore userStore = ScopedModel.of(context);
-    print(userStore.toString());
+    // 延时一下
+    await Future.delayed(const Duration(milliseconds: 500));
+    final userStore = Provide.value<BaseUserStore>(context);
     if (userStore.isLogin) {
       try {
-        // 延时一下
-        await Future.delayed(const Duration(seconds: 1));
         // 开始刷新token
         LoginResultBean loginResult = await RequestApi.refreshToken();
-        print(loginResult);
         // 获取用户小区信息
         List<Community> communityList = await RequestApi.queryUserHouse();
-        print(communityList);
-
         // 存储
         await PrefsUtil.saveToken(loginResult.token);
         await PrefsUtil.saveUserBean(loginResult.user);
-
-        // 更新model
-        BaseUserStore userStore = ScopedModel.of(context);
         // 更新一下user
         userStore.userBean = loginResult.user;
         // 存储 communityList
         userStore.communityList = communityList;
-        print(communityList);
       } catch (error) {
         print(error);
       }
@@ -111,7 +103,7 @@ class MineState extends State<MineWidget> {
     if (resultValue != null && resultValue) {
       // 清空本地存储
       await PrefsUtil.clear();
-      BaseUserStore userStore = ScopedModel.of(context);
+      final userStore = Provide.value<BaseUserStore>(context);
       // 确实点击了退出登录按钮
       userStore.isLogin = false;
       userStore.userBean = null;
@@ -120,89 +112,98 @@ class MineState extends State<MineWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Image.asset('assets/mine_top_bg.png', width: 360),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: AppBar(
-                title: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-                  return Text(userStore.userBean.nickname, style: TextStyle(fontSize: 16, color: Colors.white));
-                }),
-                backgroundColor: Colors.transparent,
-                centerTitle: true,
-                elevation: 0,
-                actions: <Widget>[
-                  StateButtonWidget(
-                    child: Container(
-                      padding: EdgeInsets.all(12),
-                      child: Image.asset('assets/setting.png'),
+    return Provide<BaseUserStore>(builder: (context, child, userStore) {
+      return Column(
+        children: <Widget>[
+          Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Image.asset('assets/mine_top_bg.png', width: 360),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: AppBar(
+                  title: Text(userStore.userBean.nickname, style: TextStyle(fontSize: 16, color: Colors.white)),
+                  backgroundColor: Colors.transparent,
+                  centerTitle: true,
+                  elevation: 0,
+                  actions: <Widget>[
+                    StateButtonWidget(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        child: Image.asset('assets/setting.png'),
+                      ),
+                      onTap: toSettings,
+                      statePressed: BoxDecoration(color: Color(0x33909090)),
                     ),
-                    onTap: toSettings,
-                    statePressed: BoxDecoration(color: Color(0x33909090)),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 35,
+                child: GestureDetector(
+                  onTap: () async {
+                    final imgFile = await _showSheetDialog(context);
+                    if (imgFile != null) {
+                      Uint8List bytes = await imgFile.readAsBytes();
+                      final base64 = 'data:image/png;base64,' + base64Encode(bytes);
+                      try {
+                        // 调用修改头像接口
+                        final res = await RequestApi.alterInfo({'avatar': base64});
+                        if (res != null) {
+                          // 修改头像地址
+                          userStore.userBean?.avatar = res['avatar'];
+                          userStore.userBean = userStore.userBean;
+                          Fluttertoast.showToast(msg: '修改头像成功', textColor: Colors.white, backgroundColor: Colors.green);
+                        }
+                      } catch (e) {
+                        print(e);
+                        Fluttertoast.showToast(msg: '修改头像失败', textColor: Colors.white, backgroundColor: Colors.red);
+                      }
+                    }
+                  },
+                  // 显示圆形图片
+                  child: SizedBox(
+                    width: 70,
+                    height: 70,
+                    child: ClipOval(
+                      child: () {
+                        final avatarUrl = userStore.userBean?.avatar;
+                        if (avatarUrl != null && avatarUrl.startsWith("http")) {
+                          return Image.network(avatarUrl);
+                        } else {
+                          return Image.asset('assets/header_icon_placeholder.png');
+                        }
+                      }(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Container(
+              color: Color(0xFFF0F0F0),
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  CupertinoSliverRefreshControl(
+                    onRefresh: _requestData,
+                    builder: buildRefreshWidget,
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => CommunityItemWidget(userStore.communityList[index]),
+                      childCount: userStore.communityList?.length ?? 0,
+                    ),
                   ),
                 ],
               ),
             ),
-            Positioned(
-              bottom: 35,
-              child: GestureDetector(
-                onTap: () async {
-                  final imgFile = await _showSheetDialog(context);
-                  if (imgFile != null) {
-                    setState(() {
-                      // 显示图片到界面
-                      _avatarFile = imgFile;
-                    });
-                  }
-                },
-                // 显示圆形图片
-                child: SizedBox(
-                  width: 70,
-                  height: 70,
-                  child: ClipOval(
-                    child: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
-                      final avatarUrl = userStore.userBean?.avatar;
-                      if (avatarUrl != null && avatarUrl.startsWith("http")) {
-                        return Image.network(avatarUrl);
-                      } else {
-                        return Image.asset('assets/header_icon_placeholder.png');
-                      }
-                    }),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Container(
-            color: Color(0xFFF0F0F0),
-            child: ScopedModelDescendant(
-              builder: (context, child, BaseUserStore userStore) => CustomScrollView(
-                    slivers: <Widget>[
-                      CupertinoSliverRefreshControl(
-                        onRefresh: _requestData,
-                        builder: buildRefreshWidget,
-                      ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => CommunityItemWidget(userStore.communityList[index]),
-                          childCount: userStore.communityList?.length ?? 0,
-                        ),
-                      ),
-                    ],
-                  ),
-            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   @override

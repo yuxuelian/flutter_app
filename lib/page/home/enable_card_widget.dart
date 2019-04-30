@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../../store/user_store.dart';
 import '../../totp/totp.dart';
@@ -23,7 +23,7 @@ class EnableCardState extends State<EnableCardWidget> {
     // 初始化的时候获取一次
     this.totpCode = generateTOTPCode();
     // 每秒计算一次totp值
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         totpCode = generateTOTPCode();
       });
@@ -61,7 +61,7 @@ class EnableCardState extends State<EnableCardWidget> {
                 Expanded(
                   child: Container(),
                 ),
-                ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+                Provide<BaseUserStore>(builder: (context, child, userStore) {
                   return QrImage(
                     data: '${userStore.userBean?.key ?? '---'}$totpCode',
                     onError: (ex) {

@@ -1,14 +1,15 @@
 import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 
 /// 获取刷新布局
 Widget buildRefreshWidget(
-    BuildContext context,
-    RefreshIndicatorMode refreshState,
-    double pulledExtent,
-    double refreshTriggerPullDistance,
-    double refreshIndicatorExtent,
-    ) {
+  BuildContext context,
+  RefreshIndicatorMode refreshState,
+  double pulledExtent,
+  double refreshTriggerPullDistance,
+  double refreshIndicatorExtent,
+) {
   const Curve opacityCurve = Interval(0.4, 0.8, curve: Curves.easeInOut);
   Widget res;
   switch (refreshState) {
@@ -24,13 +25,13 @@ Widget buildRefreshWidget(
                 CupertinoIcons.down_arrow,
                 color: CupertinoColors.inactiveGray,
                 size: 28.0,
-                ),
+              ),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('下拉刷新...', style: TextStyle(fontSize: 16, color: Color(0xFF606060))),
+              Text('下拉刷新...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
-            ),
           ),
-        );
+        ),
+      );
       break;
     case RefreshIndicatorMode.armed:
     case RefreshIndicatorMode.refresh:
@@ -42,11 +43,11 @@ Widget buildRefreshWidget(
             children: <Widget>[
               CupertinoActivityIndicator(radius: 14.0),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('正在刷新...', style: TextStyle(fontSize: 16, color: Color(0xFF606060))),
+              Text('正在刷新...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
-            ),
           ),
-        );
+        ),
+      );
       break;
     case RefreshIndicatorMode.done:
       res = Opacity(
@@ -57,11 +58,11 @@ Widget buildRefreshWidget(
             children: <Widget>[
               CupertinoActivityIndicator(radius: 14.0),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('刷新结束...', style: TextStyle(fontSize: 16, color: Color(0xFF606060))),
+              Text('刷新结束...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
-            ),
           ),
-        );
+        ),
+      );
       break;
     default:
       break;

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../main.dart';
 import '../store/user_store.dart';
@@ -33,7 +33,7 @@ class ManageHouseState extends State<ManageHousePage> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: ScopedModelDescendant(builder: (context, child, BaseUserStore userStore) {
+      body: Provide<BaseUserStore>(builder: (context, child, userStore) {
         final houseMember = userStore.selectedCommunity.house_member;
         final slivers = <Widget>[];
         if (houseMember.isNotEmpty) {
@@ -62,13 +62,9 @@ class ManageHouseState extends State<ManageHousePage> {
             ),
           ));
         } else {
-          slivers.add(SliverToBoxAdapter(
-            child: EmptyWidget(),
-          ));
+          slivers.add(SliverToBoxAdapter(child: EmptyWidget()));
         }
-        return CustomScrollView(
-          slivers: slivers,
-        );
+        return CustomScrollView(slivers: slivers);
       }),
     );
   }

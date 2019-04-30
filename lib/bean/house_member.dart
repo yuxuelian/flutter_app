@@ -5,10 +5,13 @@ import '../utils/string_utils.dart';
 class HouseMember {
   // 可生成人员
   static final ENABLE_CREATE_MEMBER = 1;
+
   // 可邀请访客
   static final ENABLE_INVITE_VISITOR = 2;
+
   // 不可邀请访客
   static final DISABLE_INVITE_VISITOR = 3;
+
   // 租客(可邀请访客)
   static final TENANT = 4;
 

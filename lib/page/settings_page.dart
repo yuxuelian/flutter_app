@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:scan_access/main.dart';
-import 'package:scan_access/store/user_store.dart';
-import 'package:scan_access/widget/include.dart';
-import 'package:scoped_model/scoped_model.dart';
+import '../main.dart';
+import '../store/user_store.dart';
+import '../widget/include.dart';
+import 'package:provide/provide.dart';
 
 import 'web_view_page.dart';
 
@@ -156,7 +156,7 @@ class MenuItemState extends State<MenuItem> {
             Expanded(
               child: Container(),
             ),
-            ScopedModelDescendant<BaseUserStore>(builder: (context, child, userStore) {
+            Provide<BaseUserStore>(builder: (context, child, userStore) {
               if (menuItemData.id == 0) {
                 return Text(userStore.userBean?.username ?? '---');
               } else if (menuItemData.id == 1) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:provide/provide.dart';
 
 import '../bean/index.dart';
 import '../page/scene_home_page.dart';
@@ -46,7 +46,7 @@ class CommunityItemState extends State<CommunityItemWidget> {
       onPressed: () {
         if (widget.enable) {
           // 记录点击的index
-          BaseUserStore userStore = ScopedModel.of(context);
+          final userStore = Provide.value<BaseUserStore>(context);
           userStore.selectedCommunity = widget.community;
           // 跳转到场景主页
           SceneHomePage.start(context);

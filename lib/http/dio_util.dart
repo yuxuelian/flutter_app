@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:scan_access/prefs/prefs_util.dart';
+import '../utils/prefs_util.dart';
 
 class DioUtil {
   static DioUtil _instance;
