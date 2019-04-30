@@ -42,7 +42,7 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
               padding: EdgeInsets.all(0),
               placeholder: '请输入手机号(必填)',
               keyboardType: TextInputType.text,
-              style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
+              style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
               decoration: BoxDecoration(border: Border()),
             ),
           ),
@@ -158,7 +158,7 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
                 splashColor: Colors.transparent,
                 highlightColor: Color(0xFFD0D0D0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))),
-                child: Text('取消', style: TextStyle(fontSize: 14, color: Color(0xFF606060))),
+                child: Text('取消', style: TextStyle(fontSize: 16, color: Color(0xFF606060))),
                 onPressed: () {
                   // 点击生成历史
                   Navigator.of(context, rootNavigator: true).pop(false);
@@ -179,7 +179,7 @@ class _MemberInputDialogWidgetState extends State<MemberInputDialogWidget> {
                 splashColor: Colors.transparent,
                 highlightColor: Color(0xFFD0D0D0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(15))),
-                child: Text('确定', style: TextStyle(fontSize: 14, color: Color(0xFFEB891A))),
+                child: Text('确定', style: TextStyle(fontSize: 16, color: Color(0xFFEB891A))),
                 onPressed: () {},
               ),
             ),

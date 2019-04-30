@@ -38,7 +38,7 @@ class CommunityItemState extends State<CommunityItemWidget> {
             ),
             Text(
               '${widget.community.address} -> ${widget.community.name}',
-              style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
+              style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
             ),
           ],
         ),

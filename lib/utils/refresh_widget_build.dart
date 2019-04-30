@@ -27,7 +27,7 @@ Widget buildRefreshWidget(
                 size: 28.0,
               ),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('下拉刷新...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
+              Text('下拉刷新...', style: TextStyle(fontSize: 16, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
           ),
         ),
@@ -43,7 +43,7 @@ Widget buildRefreshWidget(
             children: <Widget>[
               CupertinoActivityIndicator(radius: 14.0),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('正在刷新...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
+              Text('正在刷新...', style: TextStyle(fontSize: 16, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
           ),
         ),
@@ -58,7 +58,7 @@ Widget buildRefreshWidget(
             children: <Widget>[
               CupertinoActivityIndicator(radius: 14.0),
               Padding(padding: EdgeInsets.only(left: 10)),
-              Text('刷新结束...', style: TextStyle(fontSize: 14, color: Color(0xFF909090), decoration: TextDecoration.none)),
+              Text('刷新结束...', style: TextStyle(fontSize: 16, color: Color(0xFF909090), decoration: TextDecoration.none)),
             ],
           ),
         ),

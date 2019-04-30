@@ -39,7 +39,7 @@ class DisableCardState extends State<DisableCardWidget> {
                 Center(
                   child: Text(
                     '状态:未登录',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
+                    style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
                   ),
                 ),
                 Expanded(

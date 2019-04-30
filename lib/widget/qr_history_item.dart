@@ -53,7 +53,7 @@ class QrHistoryItem extends StatelessWidget {
                   Text(
                     qrCodeBean.fullHouseName,
                     maxLines: 1,
-                    style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
+                    style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
                   ),
                   Row(
                     children: <Widget>[
@@ -61,14 +61,14 @@ class QrHistoryItem extends StatelessWidget {
                         child: Text(
                           "姓名:${qrCodeBean.name.isEmpty ? '未填写' : qrCodeBean.name}",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
+                          style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
                         ),
                       ),
                       Image.asset('assets/icon_blue_indicator.png', width: 20),
                       Text(
                         qrCodeBean.created_at,
                         maxLines: 1,
-                        style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
+                        style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
                       ),
                       Padding(padding: EdgeInsets.only(right: 20)),
                     ],
@@ -79,14 +79,14 @@ class QrHistoryItem extends StatelessWidget {
                         child: Text(
                           "手机号:${qrCodeBean.phone.isEmpty ? '未填写' : qrCodeBean.phone}",
                           maxLines: 1,
-                          style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
+                          style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
                         ),
                       ),
                       Image.asset('assets/icon_orange_indicator.png', width: 20),
                       Text(
                         qrCodeBean.expire,
                         maxLines: 1,
-                        style: TextStyle(fontSize: 14, color: Color(0xFF606060)),
+                        style: TextStyle(fontSize: 16, color: Color(0xFF606060)),
                       ),
                       Padding(padding: EdgeInsets.only(right: 20)),
                     ],

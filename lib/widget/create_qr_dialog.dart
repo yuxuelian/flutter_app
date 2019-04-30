@@ -36,11 +36,12 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
           Expanded(
             child: CupertinoTextField(
               maxLines: 1,
+              maxLength: 6,
               autofocus: false,
               padding: EdgeInsets.all(0),
               placeholder: '访客姓名(非必填)',
               keyboardType: TextInputType.text,
-              style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
+              style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
               decoration: BoxDecoration(border: Border()),
             ),
           ),
@@ -63,11 +64,12 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
           Expanded(
             child: CupertinoTextField(
               maxLines: 1,
+              maxLength: 11,
               autofocus: false,
               padding: EdgeInsets.all(0),
               placeholder: '访客电话(非必填)',
-              keyboardType: TextInputType.text,
-              style: TextStyle(fontSize: 14, color: Color(0xFF303030)),
+              keyboardType: TextInputType.phone,
+              style: TextStyle(fontSize: 16, color: Color(0xFF303030)),
               decoration: BoxDecoration(border: Border()),
             ),
           ),
@@ -97,7 +99,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
               Padding(
                 padding: EdgeInsets.only(left: 16),
               ),
-              Text(_selectValidateTypeIndex == null ? '请选择过期类型' : _validateTypeList[_selectValidateTypeIndex], style: TextStyle(fontSize: 14, color: Color(0xFF303030))),
+              Text(_selectValidateTypeIndex == null ? '请选择过期类型' : _validateTypeList[_selectValidateTypeIndex], style: TextStyle(fontSize: 16, color: Color(0xFF303030))),
             ],
           ),
         );
@@ -128,7 +130,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
               Padding(
                 padding: EdgeInsets.only(left: 16),
               ),
-              Text(_selectHouseMember == null ? '请选择房屋' : _selectHouseMember.fullHouseName, style: TextStyle(fontSize: 14, color: Color(0xFF303030))),
+              Text(_selectHouseMember == null ? '请选择房屋' : _selectHouseMember.fullHouseName, style: TextStyle(fontSize: 16, color: Color(0xFF303030))),
             ],
           ),
         );
@@ -149,7 +151,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
                 splashColor: Colors.transparent,
                 highlightColor: Color(0xFFD0D0D0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))),
-                child: Text('生成历史', style: TextStyle(fontSize: 14, color: Color(0xFF606060))),
+                child: Text('生成历史', style: TextStyle(fontSize: 16, color: Color(0xFF606060))),
                 onPressed: () {
                   // 点击生成历史
                   Navigator.of(context, rootNavigator: true).pop(false);
@@ -170,7 +172,7 @@ class _CreateQrDialogState extends State<CreateQrDialogWidget> {
                 splashColor: Colors.transparent,
                 highlightColor: Color(0xFFD0D0D0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(15))),
-                child: Text('立即生成', style: TextStyle(fontSize: 14, color: Color(0xFFEB891A))),
+                child: Text('立即生成', style: TextStyle(fontSize: 16, color: Color(0xFFEB891A))),
                 onPressed: () {
                   // TODO 联网创建访客二维码
 

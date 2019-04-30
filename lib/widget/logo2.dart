@@ -22,7 +22,7 @@ class Logo2Widget extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(7)),
                 ),
               ),
-              Text('一石酷码通', style: TextStyle(fontSize: 14, color: Color(0xFF606060)))
+              Text('一石酷码通', style: TextStyle(fontSize: 16, color: Color(0xFF606060)))
             ],
           ),
           Expanded(

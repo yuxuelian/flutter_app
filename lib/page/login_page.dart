@@ -413,7 +413,7 @@ class LoginPageState extends State<LoginPage> {
               Text(
                 '使用即表示同意',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: Color(0xFF606060),
                 ),
               ),
@@ -421,7 +421,7 @@ class LoginPageState extends State<LoginPage> {
                 child: Text(
                   '《用户协议》',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Color(0xFF2196F3),
                   ),
                 ),
